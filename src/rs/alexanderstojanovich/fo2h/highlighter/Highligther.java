@@ -226,7 +226,7 @@ public class Highligther {
                                     Color pixCol = new Color(imgDst[i].getRGB(px, py), true);
                                     // writtable raster must be associated with ARGB image!!
                                     ColorSample cs = ColorSample.getGaussianBlurSample(wr, px, py);
-                                    if (pixCol.getAlpha() < 255 && cs.getAlpha() > 0) {
+                                    if (pixCol.getAlpha() == 0 && cs.getAlpha() > 0) {
                                         imgDst[i].setRGB(px, py, getOutlineColor(extLessFilename).getRGB());
                                     }
                                 }
