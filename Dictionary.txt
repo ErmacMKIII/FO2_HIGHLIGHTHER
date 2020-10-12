@@ -29,7 +29,7 @@ GREANADE_E
 @T4_ARMORS
 baground
 eca
-dsrtca
+DSRTCA
 blueCA
 CMBDR
 PWRARMR
@@ -194,9 +194,9 @@ gunbullets
 
 @ORES
 ironSourceB
-ironsourceS
+ironSourceS
 mineralSourceB
-mineralsourceS.png
+mineralsourceS
 ironground
 mineralground
 

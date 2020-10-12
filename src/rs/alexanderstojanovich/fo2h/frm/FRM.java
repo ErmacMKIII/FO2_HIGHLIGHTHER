@@ -38,10 +38,10 @@ public class FRM {
     private int actionFrame; // 2-byte unsigned (0x0006)
     private int framesPerDirection; // 2-byte unsigned (0x0008)
 
-    private final int[] shiftX = new int[6]; // signed 
-    private final int[] shiftY = new int[6]; // signed   
+    private int[] shiftX = new int[6]; // signed 
+    private int[] shiftY = new int[6]; // signed   
 
-    private final int[] offset = new int[6]; // unsigned
+    private int[] offset = new int[6]; // unsigned
 
     // image composed of frames (but frame 0 is primarily used)
     private final List<ImageData> frames = new ArrayList<>();
@@ -68,14 +68,21 @@ public class FRM {
      * open doors, etc.)
      * @param framesPerDirection number of frames for a particular orientation
      * @param frameSize used to allocating memory for frames
-     * @param images array of images.
+     * @param shiftX required X shift array
+     * @param shiftY required Y shift array
+     * @param offset frame offset array
+     * @param images array of images
      */
-    public FRM(int version, int fps, int actionFrame, int framesPerDirection, int frameSize, BufferedImage[] images) {
+    public FRM(int version, int fps, int actionFrame, int framesPerDirection, int frameSize,
+            int[] shiftX, int[] shiftY, int[] offset, BufferedImage[] images) {
         this.version = version;
         this.fps = fps;
         this.actionFrame = actionFrame;
         this.framesPerDirection = framesPerDirection;
         this.frameSize = frameSize;
+        this.shiftX = shiftX;
+        this.shiftY = shiftY;
+        this.offset = offset;
         for (BufferedImage image : images) {
             ImageData imgData = new ImageData(image);
             frames.add(imgData);
@@ -165,26 +172,24 @@ public class FRM {
         frameSize = ((buffer[pos] & 0xFF) << 24) | ((buffer[pos + 1] & 0xFF) << 16) | ((buffer[pos + 2] & 0xFF) << 8) | (buffer[pos + 3] & 0xFF);
         pos += 4;
         //----------------------------------------------------------------------        
-        for (int i = 0; i < frameSize; i++) {
-            for (int j = 0; j < framesPerDirection; j++) {
-                int width = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
-                pos += 2;
-                int height = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
-                pos += 2;
-                //--------------------------------------------------------------
-                pos += 4;
-                pos += 2;
-                pos += 2;
-                //--------------------------------------------------------------
-                ImageData imgData = new ImageData(width, height);
-                for (int py = 0; py < imgData.getHeight(); py++) {
-                    for (int px = 0; px < imgData.getWidth(); px++) {
-                        byte index = buffer[pos++];
-                        imgData.setPixel(px, py, index);
-                    }
+        for (int j = 0; j < framesPerDirection; j++) {
+            int width = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
+            pos += 2;
+            int height = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
+            pos += 2;
+            //--------------------------------------------------------------
+            pos += 4;
+            pos += 2;
+            pos += 2;
+            //--------------------------------------------------------------
+            ImageData imgData = new ImageData(width, height);
+            for (int py = 0; py < imgData.getHeight(); py++) {
+                for (int px = 0; px < imgData.getWidth(); px++) {
+                    byte index = buffer[pos++];
+                    imgData.setPixel(px, py, index);
                 }
-                frames.add(imgData);
             }
+            frames.add(imgData);
         }
     }
 

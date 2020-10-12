@@ -17,6 +17,8 @@
 package rs.alexanderstojanovich.fo2h.highlighter;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
@@ -66,7 +68,7 @@ public class Highligther {
     private Color bookColor = new Color(255, 255, 0);
     private Color oreColor = new Color(255, 255, 255);
     private Color resourcesColor = new Color(0, 255, 255);
-    private Color containerColor = new Color(175, 0, 255);
+    private Color containerColor = new Color(255, 75, 0);
     private Color unusedColor = new Color(167, 107, 107);
 
     public Highligther() {
@@ -83,7 +85,7 @@ public class Highligther {
                 if (line.startsWith("@")) {
                     obj = Obj.valueOf(line.trim().substring(1));
                 } else {
-                    DICTIONARY.put(line.trim(), obj);
+                    DICTIONARY.put(line.trim().toLowerCase(), obj);
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -103,7 +105,7 @@ public class Highligther {
 
     private Color getOutlineColor(String extLessFilename) {
         Color result;
-        Obj obj = DICTIONARY.getOrDefault(extLessFilename, Obj.UNUSED);
+        Obj obj = DICTIONARY.getOrDefault(extLessFilename.toLowerCase(), Obj.UNUSED);
         switch (obj) {
             case IMPLANTS:
                 result = implantColor;
@@ -192,54 +194,58 @@ public class Highligther {
                     String extLessFilename = srcFile.getName().replaceFirst("[.][^.]+$", "");
                     //----------------------------------------------------------
                     if (srcFile.getName().toLowerCase().endsWith(".frm")) {
-                        BufferedImage imgSrc = null;
-
                         FRM srcFRM = new FRM();
                         srcFRM.read(srcFile);
                         List<ImageData> frames = srcFRM.getFrames();
-                        if (!frames.isEmpty()) {
-                            ImageData imgData = frames.get(0);
-                            imgSrc = imgData.toBufferedImage();
-                        }
+                        BufferedImage[] imgSrc = new BufferedImage[frames.size()];
+                        BufferedImage[] imgDst = new BufferedImage[frames.size()];
+                        for (int i = 0; i < frames.size(); i++) {
+                            imgSrc[i] = frames.get(i).toBufferedImage();
+                            imgDst[i] = new BufferedImage(imgSrc[i].getWidth() + 2, imgSrc[i].getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
 
-                        if (imgSrc != null) {
-                            BufferedImage imgDst = new BufferedImage(imgSrc.getWidth() + 2, imgSrc.getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
-                            imgDst.createGraphics().drawImage(imgSrc, 1, 1, null);
+                            Graphics2D graphics2D = imgDst[i].createGraphics();
+                            graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+
+                            graphics2D.drawImage(imgSrc[i], 1, 1, null);
                             // blue color removal
-                            for (int px = 0; px < imgDst.getWidth(); px++) {
-                                for (int py = 0; py < imgDst.getHeight(); py++) {
-                                    Color pixCol = new Color(imgDst.getRGB(px, py), true);
+                            for (int px = 0; px < imgDst[i].getWidth(); px++) {
+                                for (int py = 0; py < imgDst[i].getHeight(); py++) {
+                                    Color pixCol = new Color(imgDst[i].getRGB(px, py), true);
                                     if (pixCol.equals(Color.BLUE)) {
-                                        imgDst.setRGB(px, py, 0);
+                                        imgDst[i].setRGB(px, py, 0);
                                     }
                                 }
                             }
                             // outline effect
-                            WritableRaster wr = imgDst.copyData(null);
-                            for (int px = 0; px < imgDst.getWidth(); px++) {
-                                for (int py = 0; py < imgDst.getHeight(); py++) {
-                                    Color pixCol = new Color(imgDst.getRGB(px, py), true);
+                            WritableRaster wr = imgDst[i].copyData(null);
+                            for (int px = 0; px < imgDst[i].getWidth(); px++) {
+                                for (int py = 0; py < imgDst[i].getHeight(); py++) {
+                                    Color pixCol = new Color(imgDst[i].getRGB(px, py), true);
                                     // writtable raster must be associated with ARGB image!!
                                     ColorSample cs = ColorSample.getGaussianBlurSample(wr, px, py);
                                     if (pixCol.getAlpha() < 255 && cs.getAlpha() > 0) {
-                                        imgDst.setRGB(px, py, getOutlineColor(extLessFilename).getRGB());
+                                        imgDst[i].setRGB(px, py, getOutlineColor(extLessFilename).getRGB());
                                     }
                                 }
                             }
-
-                            final BufferedImage[] dstImages = {imgDst};
-
-                            FRM dstFRM = new FRM(
-                                    srcFRM.getVersion(),
-                                    srcFRM.getFps(),
-                                    srcFRM.getActionFrame(),
-                                    srcFRM.getFramesPerDirection(),
-                                    srcFRM.getFrameSize(),
-                                    dstImages
-                            );
-                            File outFile = new File(outDir + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
-                            dstFRM.write(outFile);
                         }
+
+                        FRM dstFRM = new FRM(
+                                srcFRM.getVersion(),
+                                srcFRM.getFps(),
+                                srcFRM.getActionFrame(),
+                                srcFRM.getFramesPerDirection(),
+                                srcFRM.getFrameSize(),
+                                srcFRM.getShiftX(),
+                                srcFRM.getShiftY(),
+                                srcFRM.getOffset(),
+                                imgDst
+                        );
+                        File outFile = new File(outDir + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
+                        dstFRM.write(outFile);
                     } else if (srcFile.getName().toLowerCase().endsWith(".png")) {
                         BufferedImage imgSrc = null;
 
@@ -251,7 +257,13 @@ public class Highligther {
 
                         if (imgSrc != null) {
                             BufferedImage imgDst = new BufferedImage(imgSrc.getWidth() + 2, imgSrc.getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
-                            imgDst.createGraphics().drawImage(imgSrc, 1, 1, null);
+                            Graphics2D graphics2D = imgDst.createGraphics();
+                            graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+
+                            graphics2D.drawImage(imgSrc, 1, 1, null);
                             // blue color removal
                             for (int px = 0; px < imgDst.getWidth(); px++) {
                                 for (int py = 0; py < imgDst.getHeight(); py++) {
@@ -268,7 +280,7 @@ public class Highligther {
                                     Color pixCol = new Color(imgDst.getRGB(px, py), true);
                                     // writtable raster must be associated with ARGB image!!
                                     ColorSample cs = ColorSample.getGaussianBlurSample(wr, px, py);
-                                    if (pixCol.getAlpha() < 255 && cs.getAlpha() > 0) {
+                                    if (pixCol.getAlpha() == 0 && cs.getAlpha() > 0) {
                                         imgDst.setRGB(px, py, getOutlineColor(extLessFilename).getRGB());
                                     }
                                 }
@@ -299,11 +311,12 @@ public class Highligther {
         t0Color = new Color(128, 128, 128);
         bookColor = new Color(255, 255, 0);
         oreColor = new Color(255, 255, 255);
-        containerColor = new Color(175, 0, 255);
+        containerColor = new Color(255, 75, 0);
         resourcesColor = new Color(0, 255, 255);
         unusedColor = new Color(167, 107, 107);
         DICTIONARY.clear();
         init();
+        progress = 0.0f;
     }
 
     public float getProgress() {

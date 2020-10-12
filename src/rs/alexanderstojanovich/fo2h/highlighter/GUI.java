@@ -489,12 +489,14 @@ public class GUI extends javax.swing.JFrame {
                 }
             }
         };
-        timer.schedule(timerTask, 0L, 125L);
+        timer.schedule(timerTask, 0L);
         Thread workThread = new Thread("Work Thread") {
             @Override
             public void run() {
                 fileMenuReset.setEnabled(false);
                 highligther.work(inDir, outDir);
+                progBarWork.setValue(Math.round(highligther.getProgress()));
+                progBarWork.validate();
                 JOptionPane.showMessageDialog(GUI.this, "Highlighter work successfully finished!", "Work Finished", JOptionPane.INFORMATION_MESSAGE);
                 timer.cancel();
                 fileMenuReset.setEnabled(true);
