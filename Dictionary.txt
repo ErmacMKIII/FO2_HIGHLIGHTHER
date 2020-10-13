@@ -183,6 +183,7 @@ cord
 eparts
 tobacco
 flint
+chemcomp
 
 @BOOKS
 hintbook

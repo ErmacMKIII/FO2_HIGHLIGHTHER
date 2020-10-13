@@ -67,23 +67,23 @@ public class FRM {
      * @param actionFrame frame of the animation on which actions occur (shot,
      * open doors, etc.)
      * @param framesPerDirection number of frames for a particular orientation
-     * @param frameSize used to allocating memory for frames
      * @param shiftX required X shift array
      * @param shiftY required Y shift array
      * @param offset frame offset array
      * @param images array of images
      */
-    public FRM(int version, int fps, int actionFrame, int framesPerDirection, int frameSize,
+    public FRM(int version, int fps, int actionFrame, int framesPerDirection,
             int[] shiftX, int[] shiftY, int[] offset, BufferedImage[] images) {
         this.version = version;
         this.fps = fps;
         this.actionFrame = actionFrame;
         this.framesPerDirection = framesPerDirection;
-        this.frameSize = frameSize;
+        this.frameSize = 0;
         this.shiftX = shiftX;
         this.shiftY = shiftY;
         this.offset = offset;
         for (BufferedImage image : images) {
+            frameSize += image.getWidth() * image.getHeight();
             ImageData imgData = new ImageData(image);
             frames.add(imgData);
         }

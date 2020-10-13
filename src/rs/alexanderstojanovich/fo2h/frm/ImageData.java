@@ -16,10 +16,8 @@
  */
 package rs.alexanderstojanovich.fo2h.frm;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
 
 /**
  *
@@ -53,14 +51,43 @@ public class ImageData {
      * @param image original image to get the data from
      */
     public ImageData(BufferedImage image) {
-        IndexColorModel icm = new IndexColorModel(8, Palette.getColors().length, Palette.getColBuff(), 0, true);
-        BufferedImage imageIndexed = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_INDEXED, icm);
-        imageIndexed.getGraphics().drawImage(image, 0, 0, null);
         this.width = image.getWidth();
         this.height = image.getHeight();
         this.data = new byte[width * height];
-        DataBufferByte dataBuffer = (DataBufferByte) imageIndexed.getRaster().getDataBuffer();
-        System.arraycopy(dataBuffer.getData(), 0, data, 0, data.length);
+        for (int px = 0; px < width; px++) {
+            for (int py = 0; py < height; py++) {
+                int e = width * py + px;
+                int rgb = image.getRGB(px, py);
+                byte index = 0;
+                boolean found = false;
+                // loop through palette colors
+                for (int rgbi : Palette.getColors()) {
+                    // if color from buff image exists in palette
+                    if (rgb == rgbi) {
+                        data[e] = index;
+                        found = true;
+                        break;
+                    }
+                    index++;
+                }
+                // if does not exist find the replacement color
+                if (!found) {
+                    Color col = new Color(rgb, true);
+                    if (col.getAlpha() != 0) {
+                        for (int rgbi : Palette.getColors()) {
+                            Color coli = new Color(rgbi);
+                            if (Math.abs(299 * (col.getRed() - coli.getRed())
+                                    + 587 * (col.getGreen() - coli.getGreen())
+                                    + 114 * (col.getBlue() - coli.getBlue())) <= 1000) {
+                                data[e] = index;
+                                break;
+                            }
+                            index++;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

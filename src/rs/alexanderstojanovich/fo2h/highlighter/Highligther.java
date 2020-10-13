@@ -204,10 +204,11 @@ public class Highligther {
                             imgDst[i] = new BufferedImage(imgSrc[i].getWidth() + 2, imgSrc[i].getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
 
                             Graphics2D graphics2D = imgDst[i].createGraphics();
+                            graphics2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
                             graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                             graphics2D.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
                             graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                            graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
                             graphics2D.drawImage(imgSrc[i], 1, 1, null);
                             // blue color removal
@@ -238,7 +239,6 @@ public class Highligther {
                                 srcFRM.getFps(),
                                 srcFRM.getActionFrame(),
                                 srcFRM.getFramesPerDirection(),
-                                srcFRM.getFrameSize(),
                                 srcFRM.getShiftX(),
                                 srcFRM.getShiftY(),
                                 srcFRM.getOffset(),
@@ -258,10 +258,11 @@ public class Highligther {
                         if (imgSrc != null) {
                             BufferedImage imgDst = new BufferedImage(imgSrc.getWidth() + 2, imgSrc.getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
                             Graphics2D graphics2D = imgDst.createGraphics();
+                            graphics2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
                             graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                             graphics2D.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
                             graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                            graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
                             graphics2D.drawImage(imgSrc, 1, 1, null);
                             // blue color removal
@@ -401,6 +402,14 @@ public class Highligther {
 
     public void setUnusedColor(Color unusedColor) {
         this.unusedColor = unusedColor;
+    }
+
+    public Color getResourcesColor() {
+        return resourcesColor;
+    }
+
+    public void setResourcesColor(Color resourcesColor) {
+        this.resourcesColor = resourcesColor;
     }
 
 }

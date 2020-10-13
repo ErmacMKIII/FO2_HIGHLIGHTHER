@@ -83,6 +83,7 @@ public class GUI extends javax.swing.JFrame {
         this.btnBookColor.setBackground(highligther.getBookColor());
         this.btnOreColor.setBackground(highligther.getOreColor());
         this.btnContainerColor.setBackground(highligther.getContainerColor());
+        this.btnContainerColor1.setBackground(highligther.getResourcesColor());
         this.btnUnusedColor.setBackground(highligther.getUnusedColor());
     }
 
@@ -91,6 +92,7 @@ public class GUI extends javax.swing.JFrame {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             inDir = fileChooserInput.getSelectedFile();
             txtFldInPath.setText(inDir.getAbsolutePath());
+            txtFldInPath.setToolTipText(inDir.getAbsolutePath());
         }
         if (inDir != null && outDir != null) {
             btnGo.setEnabled(true);
@@ -102,6 +104,7 @@ public class GUI extends javax.swing.JFrame {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             outDir = fileChooserOutput.getSelectedFile();
             txtFldOutPath.setText(outDir.getAbsolutePath());
+            txtFldOutPath.setToolTipText(outDir.getAbsolutePath());
         }
         if (inDir != null && outDir != null) {
             btnGo.setEnabled(true);
@@ -119,12 +122,14 @@ public class GUI extends javax.swing.JFrame {
 
         fileChooserInput = new javax.swing.JFileChooser();
         fileChooserOutput = new javax.swing.JFileChooser();
-        txtFldInPath = new javax.swing.JTextField();
-        lblInput = new javax.swing.JLabel();
-        btnChooseInPath = new javax.swing.JButton();
-        txtFldOutPath = new javax.swing.JTextField();
+        pnlFilePaths = new javax.swing.JPanel();
         lblOutput = new javax.swing.JLabel();
+        btnChooseInPath = new javax.swing.JButton();
+        lblInput = new javax.swing.JLabel();
+        txtFldInPath = new javax.swing.JTextField();
         btnChoosePathOut = new javax.swing.JButton();
+        txtFldOutPath = new javax.swing.JTextField();
+        pnlOutlineColors = new javax.swing.JPanel();
         lblImplantColor = new javax.swing.JLabel();
         btnImplantColor = new javax.swing.JButton();
         lblT4Color = new javax.swing.JLabel();
@@ -141,13 +146,15 @@ public class GUI extends javax.swing.JFrame {
         btnBookColor = new javax.swing.JButton();
         lblOreColor = new javax.swing.JLabel();
         btnOreColor = new javax.swing.JButton();
-        lblUnusedColor = new javax.swing.JLabel();
-        btnUnusedColor = new javax.swing.JButton();
+        lblResourceColor = new javax.swing.JLabel();
+        btnContainerColor1 = new javax.swing.JButton();
         lblContainerColor = new javax.swing.JLabel();
         btnContainerColor = new javax.swing.JButton();
+        lblUnusedColor = new javax.swing.JLabel();
+        btnUnusedColor = new javax.swing.JButton();
         btnGo = new javax.swing.JButton();
         progBarWork = new javax.swing.JProgressBar();
-        jMenuBar1 = new javax.swing.JMenuBar();
+        mainMenu = new javax.swing.JMenuBar();
         mainMenuFile = new javax.swing.JMenu();
         fileMenuReset = new javax.swing.JMenuItem();
         fileMenuExit = new javax.swing.JMenuItem();
@@ -161,12 +168,12 @@ public class GUI extends javax.swing.JFrame {
         fileChooserOutput.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("FOnline2 Custom Highlighter");
+        setTitle("FOnline2 Highlighter - GOTHS");
         setResizable(false);
 
-        txtFldInPath.setEditable(false);
+        pnlFilePaths.setBorder(javax.swing.BorderFactory.createTitledBorder("Directory Paths"));
 
-        lblInput.setText("Input data directory:");
+        lblOutput.setText("Output data directory:");
 
         btnChooseInPath.setText("Input dir...");
         btnChooseInPath.addActionListener(new java.awt.event.ActionListener() {
@@ -175,9 +182,9 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        txtFldOutPath.setEditable(false);
+        lblInput.setText("Input data directory:");
 
-        lblOutput.setText("Output data directory:");
+        txtFldInPath.setEditable(false);
 
         btnChoosePathOut.setText("Output dir...");
         btnChoosePathOut.addActionListener(new java.awt.event.ActionListener() {
@@ -186,7 +193,49 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        txtFldOutPath.setEditable(false);
+
+        javax.swing.GroupLayout pnlFilePathsLayout = new javax.swing.GroupLayout(pnlFilePaths);
+        pnlFilePaths.setLayout(pnlFilePathsLayout);
+        pnlFilePathsLayout.setHorizontalGroup(
+            pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlFilePathsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblInput, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lblOutput))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtFldOutPath, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                    .addComponent(txtFldInPath))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnChooseInPath, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnChoosePathOut))
+                .addContainerGap())
+        );
+        pnlFilePathsLayout.setVerticalGroup(
+            pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlFilePathsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFldInPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblInput)
+                    .addComponent(btnChooseInPath))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFldOutPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblOutput)
+                    .addComponent(btnChoosePathOut))
+                .addContainerGap())
+        );
+
+        pnlOutlineColors.setBorder(javax.swing.BorderFactory.createTitledBorder("Outline Colors"));
+        pnlOutlineColors.setLayout(new java.awt.GridLayout(11, 2, 2, 2));
+
+        lblImplantColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblImplantColor.setText("Implant Color:");
+        pnlOutlineColors.add(lblImplantColor);
 
         btnImplantColor.setBorder(null);
         btnImplantColor.addActionListener(new java.awt.event.ActionListener() {
@@ -194,8 +243,11 @@ public class GUI extends javax.swing.JFrame {
                 btnImplantColorActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnImplantColor);
 
+        lblT4Color.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblT4Color.setText("Tier 4 Color:");
+        pnlOutlineColors.add(lblT4Color);
 
         btnT4Color.setBorder(null);
         btnT4Color.addActionListener(new java.awt.event.ActionListener() {
@@ -203,8 +255,11 @@ public class GUI extends javax.swing.JFrame {
                 btnT4ColorActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnT4Color);
 
+        lblT3Color.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblT3Color.setText("Tier 3 Color:");
+        pnlOutlineColors.add(lblT3Color);
 
         btnT3Color.setBorder(null);
         btnT3Color.addActionListener(new java.awt.event.ActionListener() {
@@ -212,8 +267,11 @@ public class GUI extends javax.swing.JFrame {
                 btnT3ColorActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnT3Color);
 
+        lblT2Color.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblT2Color.setText("Tier 2 Color:");
+        pnlOutlineColors.add(lblT2Color);
 
         btnT2Color.setBorder(null);
         btnT2Color.addActionListener(new java.awt.event.ActionListener() {
@@ -221,8 +279,11 @@ public class GUI extends javax.swing.JFrame {
                 btnT2ColorActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnT2Color);
 
+        lblT1Color.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblT1Color.setText("Tier 1 Color:");
+        pnlOutlineColors.add(lblT1Color);
 
         btnT1Color.setBorder(null);
         btnT1Color.addActionListener(new java.awt.event.ActionListener() {
@@ -230,8 +291,11 @@ public class GUI extends javax.swing.JFrame {
                 btnT1ColorActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnT1Color);
 
+        lblT0Color.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblT0Color.setText("Tier 0 Color:");
+        pnlOutlineColors.add(lblT0Color);
 
         btnT0Color.setBorder(null);
         btnT0Color.addActionListener(new java.awt.event.ActionListener() {
@@ -239,8 +303,11 @@ public class GUI extends javax.swing.JFrame {
                 btnT0ColorActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnT0Color);
 
+        lblBookColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblBookColor.setText("Book Color:");
+        pnlOutlineColors.add(lblBookColor);
 
         btnBookColor.setBorder(null);
         btnBookColor.addActionListener(new java.awt.event.ActionListener() {
@@ -248,8 +315,11 @@ public class GUI extends javax.swing.JFrame {
                 btnBookColorActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnBookColor);
 
+        lblOreColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblOreColor.setText("Ore Color:");
+        pnlOutlineColors.add(lblOreColor);
 
         btnOreColor.setBorder(null);
         btnOreColor.addActionListener(new java.awt.event.ActionListener() {
@@ -257,17 +327,23 @@ public class GUI extends javax.swing.JFrame {
                 btnOreColorActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnOreColor);
 
-        lblUnusedColor.setText("Unused Color:");
+        lblResourceColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblResourceColor.setText("Resource Color:");
+        pnlOutlineColors.add(lblResourceColor);
 
-        btnUnusedColor.setBorder(null);
-        btnUnusedColor.addActionListener(new java.awt.event.ActionListener() {
+        btnContainerColor1.setBorder(null);
+        btnContainerColor1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnUnusedColorActionPerformed(evt);
+                btnContainerColor1ActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnContainerColor1);
 
+        lblContainerColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblContainerColor.setText("Container Color:");
+        pnlOutlineColors.add(lblContainerColor);
 
         btnContainerColor.setBorder(null);
         btnContainerColor.addActionListener(new java.awt.event.ActionListener() {
@@ -275,9 +351,23 @@ public class GUI extends javax.swing.JFrame {
                 btnContainerColorActionPerformed(evt);
             }
         });
+        pnlOutlineColors.add(btnContainerColor);
+
+        lblUnusedColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblUnusedColor.setText("Unused Color:");
+        pnlOutlineColors.add(lblUnusedColor);
+
+        btnUnusedColor.setBorder(null);
+        btnUnusedColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUnusedColorActionPerformed(evt);
+            }
+        });
+        pnlOutlineColors.add(btnUnusedColor);
 
         btnGo.setForeground(new java.awt.Color(51, 255, 51));
         btnGo.setText("GO");
+        btnGo.setToolTipText("Get the highlighter working");
         btnGo.setEnabled(false);
         btnGo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -305,7 +395,7 @@ public class GUI extends javax.swing.JFrame {
         });
         mainMenuFile.add(fileMenuExit);
 
-        jMenuBar1.add(mainMenuFile);
+        mainMenu.add(mainMenuFile);
 
         mainMenuInfo.setText("Info");
 
@@ -325,9 +415,9 @@ public class GUI extends javax.swing.JFrame {
         });
         mainMenuInfo.add(infoMenuHelp);
 
-        jMenuBar1.add(mainMenuInfo);
+        mainMenu.add(mainMenuInfo);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(mainMenu);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -336,129 +426,28 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnGo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnGo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progBarWork, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblT0Color)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnT0Color, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblImplantColor)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnImplantColor, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblT4Color)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(lblBookColor)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnBookColor, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                            .addComponent(btnT4Color, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblT3Color)
-                            .addComponent(lblOreColor))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnT3Color, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblT2Color))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnOreColor, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lblContainerColor)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnT2Color, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                            .addComponent(btnContainerColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblT1Color)
-                            .addComponent(lblUnusedColor))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnT1Color, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                            .addComponent(btnUnusedColor, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblInput, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblOutput))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtFldOutPath)
-                            .addComponent(txtFldInPath))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnChooseInPath, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnChoosePathOut, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(progBarWork, javax.swing.GroupLayout.PREFERRED_SIZE, 741, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(pnlOutlineColors, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnlFilePaths, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnBookColor, btnContainerColor, btnImplantColor, btnOreColor, btnT0Color, btnT1Color, btnT2Color, btnT3Color, btnT4Color, btnUnusedColor});
-
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFldInPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblInput)
-                    .addComponent(btnChooseInPath))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtFldOutPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblOutput))
-                    .addComponent(btnChoosePathOut, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblImplantColor)
-                                .addComponent(btnImplantColor, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lblT4Color)
-                                .addComponent(btnT4Color, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblT3Color)
-                                .addComponent(btnT3Color, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblT1Color)
-                            .addComponent(btnT1Color, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblT2Color)
-                        .addComponent(btnT2Color, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblT0Color)
-                        .addComponent(btnT0Color, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblBookColor)
-                        .addComponent(btnBookColor, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(lblOreColor)
-                        .addComponent(btnOreColor, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblContainerColor)
-                        .addComponent(btnContainerColor, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblUnusedColor)
-                        .addComponent(btnUnusedColor, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pnlFilePaths, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addComponent(pnlOutlineColors, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(btnGo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(progBarWork, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 19, Short.MAX_VALUE))
+                .addGap(0, 23, Short.MAX_VALUE))
         );
-
-        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnBookColor, btnContainerColor, btnImplantColor, btnOreColor, btnT0Color, btnT1Color, btnT2Color, btnT3Color, btnT4Color, btnUnusedColor});
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -598,16 +587,17 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION v1.0 - FRANKS (PUBLIC BUILD reviewed on 2020-10-12 at 18:00).</b></html>\n");
+            sb.append("<html><b>VERSION v1.1 - GOTHS (PUBLIC BUILD reviewed on 2020-10-13 at 17:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
             sb.append("Changelog:\n");
-            sb.append("\t- First release\n");
+            sb.append("\t- Fixed bad quality FRM images.\n");
+            sb.append("\t- Fixed missing custom color for resources.\n");
             sb.append("\n");
             sb.append("Objective:\n");
             sb.append("\tThe purpose of this program is\n");
-            sb.append("\tcolorizing onground and scenery items for FOnline Engines.\n");
+            sb.append("\tcolorizing onground and scenery items for FOnline series.\n");
             sb.append("\n");
             sb.append("\tDesignated to use primarily for FOnline2 Season 3.\n");
             sb.append("\n");
@@ -651,6 +641,14 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_infoMenuHelpActionPerformed
 
+    private void btnContainerColor1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContainerColor1ActionPerformed
+        // TODO add your handling code here:
+        Color color = JColorChooser.showDialog(this, "Choose Resource Color", this.highligther.getResourcesColor());
+        if (color != null) {
+            this.highligther.setResourcesColor(color);
+        }
+    }//GEN-LAST:event_btnContainerColor1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -681,6 +679,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnChooseInPath;
     private javax.swing.JButton btnChoosePathOut;
     private javax.swing.JButton btnContainerColor;
+    private javax.swing.JButton btnContainerColor1;
     private javax.swing.JButton btnGo;
     private javax.swing.JButton btnImplantColor;
     private javax.swing.JButton btnOreColor;
@@ -696,21 +695,24 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem fileMenuReset;
     private javax.swing.JMenuItem infoMenuAbout;
     private javax.swing.JMenuItem infoMenuHelp;
-    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JLabel lblBookColor;
     private javax.swing.JLabel lblContainerColor;
     private javax.swing.JLabel lblImplantColor;
     private javax.swing.JLabel lblInput;
     private javax.swing.JLabel lblOreColor;
     private javax.swing.JLabel lblOutput;
+    private javax.swing.JLabel lblResourceColor;
     private javax.swing.JLabel lblT0Color;
     private javax.swing.JLabel lblT1Color;
     private javax.swing.JLabel lblT2Color;
     private javax.swing.JLabel lblT3Color;
     private javax.swing.JLabel lblT4Color;
     private javax.swing.JLabel lblUnusedColor;
+    private javax.swing.JMenuBar mainMenu;
     private javax.swing.JMenu mainMenuFile;
     private javax.swing.JMenu mainMenuInfo;
+    private javax.swing.JPanel pnlFilePaths;
+    private javax.swing.JPanel pnlOutlineColors;
     private javax.swing.JProgressBar progBarWork;
     private javax.swing.JTextField txtFldInPath;
     private javax.swing.JTextField txtFldOutPath;
