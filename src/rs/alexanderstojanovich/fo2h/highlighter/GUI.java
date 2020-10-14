@@ -179,7 +179,6 @@ public class GUI extends javax.swing.JFrame {
         progBarWork = new javax.swing.JProgressBar();
         mainMenu = new javax.swing.JMenuBar();
         mainMenuFile = new javax.swing.JMenu();
-        fileMenuReset = new javax.swing.JMenuItem();
         fileMenuExit = new javax.swing.JMenuItem();
         mainMenuInfo = new javax.swing.JMenu();
         infoMenuAbout = new javax.swing.JMenuItem();
@@ -428,14 +427,6 @@ public class GUI extends javax.swing.JFrame {
 
         mainMenuFile.setText("File");
 
-        fileMenuReset.setText("Reset");
-        fileMenuReset.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileMenuResetActionPerformed(evt);
-            }
-        });
-        mainMenuFile.add(fileMenuReset);
-
         fileMenuExit.setText("Exit");
         fileMenuExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -501,14 +492,12 @@ public class GUI extends javax.swing.JFrame {
         Thread workThread = new Thread("Work Thread") {
             @Override
             public void run() {
-                fileMenuReset.setEnabled(false);
                 highligther.work();
                 progBarWork.setValue(Math.round(highligther.getProgress()));
                 progBarWork.validate();
                 JOptionPane.showMessageDialog(GUI.this, "Highlighter work successfully finished!", "Work Finished", JOptionPane.INFORMATION_MESSAGE);
                 progBarWork.setValue(0);
                 timer.cancel();
-                fileMenuReset.setEnabled(true);
             }
         };
         workThread.start();
@@ -599,16 +588,6 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:        
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }//GEN-LAST:event_fileMenuExitActionPerformed
-
-    private void fileMenuResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuResetActionPerformed
-        // TODO add your handling code here:
-        cfg.readConfigFile();
-        Palette.reset();
-        Palette.load("Fallout Palette.act");
-        highligther.reset();
-        initColors();
-        initPaths();
-    }//GEN-LAST:event_fileMenuResetActionPerformed
 
     private void infoMenuAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoMenuAboutActionPerformed
         // TODO add your handling code here:
@@ -741,7 +720,6 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JFileChooser fileChooserInput;
     private javax.swing.JFileChooser fileChooserOutput;
     private javax.swing.JMenuItem fileMenuExit;
-    private javax.swing.JMenuItem fileMenuReset;
     private javax.swing.JMenuItem infoMenuAbout;
     private javax.swing.JMenuItem infoMenuHelp;
     private javax.swing.JLabel lblBookColor;
