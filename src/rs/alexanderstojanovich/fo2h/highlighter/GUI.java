@@ -41,6 +41,8 @@ import rs.alexanderstojanovich.fo2h.util.FO2HLogger;
  */
 public class GUI extends javax.swing.JFrame {
 
+    private static final Configuration cfg = new Configuration();
+
     // cool it's our new logo :)
     private static final String LOGO_FILE_NAME = "fo2hlogo.png";
     // and logox variant with black outline
@@ -57,7 +59,7 @@ public class GUI extends javax.swing.JFrame {
      */
     public GUI() {
         initComponents();
-        this.highligther = new Highligther(pnlPalette);
+        this.highligther = new Highligther(cfg, pnlPalette);
         initFO2HLogos();
         initColors();
         initPosition();
@@ -84,17 +86,17 @@ public class GUI extends javax.swing.JFrame {
     }
 
     private void initColors() {
-        this.btnImplantColor.setBackground(highligther.getImplantColor());
-        this.btnT4Color.setBackground(highligther.getT4Color());
-        this.btnT3Color.setBackground(highligther.getT3Color());
-        this.btnT2Color.setBackground(highligther.getT2Color());
-        this.btnT1Color.setBackground(highligther.getT1Color());
-        this.btnT0Color.setBackground(highligther.getT0Color());
-        this.btnBookColor.setBackground(highligther.getBookColor());
-        this.btnOreColor.setBackground(highligther.getOreColor());
-        this.btnContainerColor.setBackground(highligther.getContainerColor());
-        this.btnContainerColor1.setBackground(highligther.getResourcesColor());
-        this.btnUnusedColor.setBackground(highligther.getUnusedColor());
+        this.btnImplantColor.setBackground(cfg.getImplantColor());
+        this.btnT4Color.setBackground(cfg.getT4Color());
+        this.btnT3Color.setBackground(cfg.getT3Color());
+        this.btnT2Color.setBackground(cfg.getT2Color());
+        this.btnT1Color.setBackground(cfg.getT1Color());
+        this.btnT0Color.setBackground(cfg.getT0Color());
+        this.btnBookColor.setBackground(cfg.getBookColor());
+        this.btnOreColor.setBackground(cfg.getOreColor());
+        this.btnContainerColor.setBackground(cfg.getContainerColor());
+        this.btnResourceColor.setBackground(cfg.getResourcesColor());
+        this.btnUnusedColor.setBackground(cfg.getUnusedColor());
     }
 
     private void fileInOpen() {
@@ -158,7 +160,7 @@ public class GUI extends javax.swing.JFrame {
         lblOreColor = new javax.swing.JLabel();
         btnOreColor = new javax.swing.JButton();
         lblResourceColor = new javax.swing.JLabel();
-        btnContainerColor1 = new javax.swing.JButton();
+        btnResourceColor = new javax.swing.JButton();
         lblContainerColor = new javax.swing.JLabel();
         btnContainerColor = new javax.swing.JButton();
         lblUnusedColor = new javax.swing.JLabel();
@@ -364,13 +366,13 @@ public class GUI extends javax.swing.JFrame {
         lblResourceColor.setText("Resource Color:");
         pnlOutlineColors.add(lblResourceColor);
 
-        btnContainerColor1.setBorder(null);
-        btnContainerColor1.addActionListener(new java.awt.event.ActionListener() {
+        btnResourceColor.setBorder(null);
+        btnResourceColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnContainerColor1ActionPerformed(evt);
+                btnResourceColorActionPerformed(evt);
             }
         });
-        pnlOutlineColors.add(btnContainerColor1);
+        pnlOutlineColors.add(btnResourceColor);
 
         lblContainerColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblContainerColor.setText("Container Color:");
@@ -503,78 +505,87 @@ public class GUI extends javax.swing.JFrame {
 
     private void btnImplantColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImplantColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Implant Color", this.highligther.getImplantColor());
+        Color color = JColorChooser.showDialog(this, "Choose Implant Color", GUI.cfg.getImplantColor());
         if (color != null) {
-            this.highligther.setImplantColor(color);
+            GUI.cfg.setImplantColor(color);
+            this.btnImplantColor.setBackground(color);
         }
     }//GEN-LAST:event_btnImplantColorActionPerformed
 
     private void btnT4ColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnT4ColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Tier 4 Color", this.highligther.getT4Color());
+        Color color = JColorChooser.showDialog(this, "Choose Tier 4 Color", GUI.cfg.getT4Color());
         if (color != null) {
-            this.highligther.setT4Color(color);
+            GUI.cfg.setT4Color(color);
+            this.btnT4Color.setBackground(color);
         }
     }//GEN-LAST:event_btnT4ColorActionPerformed
 
     private void btnT3ColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnT3ColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Tier 3 Color", this.highligther.getT3Color());
+        Color color = JColorChooser.showDialog(this, "Choose Tier 3 Color", GUI.cfg.getT3Color());
         if (color != null) {
-            this.highligther.setT3Color(color);
+            GUI.cfg.setT3Color(color);
+            this.btnT3Color.setBackground(color);
         }
     }//GEN-LAST:event_btnT3ColorActionPerformed
 
     private void btnT2ColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnT2ColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Tier 2 Color", this.highligther.getT2Color());
+        Color color = JColorChooser.showDialog(this, "Choose Tier 2 Color", GUI.cfg.getT2Color());
         if (color != null) {
-            this.highligther.setT2Color(color);
+            GUI.cfg.setT2Color(color);
+            this.btnT2Color.setBackground(color);
         }
     }//GEN-LAST:event_btnT2ColorActionPerformed
 
     private void btnT1ColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnT1ColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Tier 1 Color", this.highligther.getT1Color());
+        Color color = JColorChooser.showDialog(this, "Choose Tier 1 Color", GUI.cfg.getT1Color());
         if (color != null) {
-            this.highligther.setT1Color(color);
+            GUI.cfg.setT1Color(color);
+            this.btnT1Color.setBackground(color);
         }
     }//GEN-LAST:event_btnT1ColorActionPerformed
 
     private void btnT0ColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnT0ColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Tier 0 Color", this.highligther.getT0Color());
+        Color color = JColorChooser.showDialog(this, "Choose Tier 0 Color", GUI.cfg.getT0Color());
         if (color != null) {
-            this.highligther.setT0Color(color);
+            GUI.cfg.setT0Color(color);
+            this.btnT0Color.setBackground(color);
         }
     }//GEN-LAST:event_btnT0ColorActionPerformed
 
     private void btnBookColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBookColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Book Color", this.highligther.getBookColor());
+        Color color = JColorChooser.showDialog(this, "Choose Book Color", GUI.cfg.getBookColor());
         if (color != null) {
-            this.highligther.setBookColor(color);
+            GUI.cfg.setBookColor(color);
+            this.btnBookColor.setBackground(color);
         }
     }//GEN-LAST:event_btnBookColorActionPerformed
 
     private void btnOreColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOreColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Ore Color", this.highligther.getOreColor());
+        Color color = JColorChooser.showDialog(this, "Choose Ore Color", GUI.cfg.getOreColor());
         if (color != null) {
-            this.highligther.setOreColor(color);
+            GUI.cfg.setOreColor(color);
+            this.btnOreColor.setBackground(color);
         }
     }//GEN-LAST:event_btnOreColorActionPerformed
 
     private void btnUnusedColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnusedColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Ore Color", this.highligther.getUnusedColor());
+        Color color = JColorChooser.showDialog(this, "Choose Ore Color", GUI.cfg.getUnusedColor());
         if (color != null) {
-            this.highligther.setUnusedColor(color);
+            GUI.cfg.setUnusedColor(color);
+            this.btnUnusedColor.setBackground(color);
         }
     }//GEN-LAST:event_btnUnusedColorActionPerformed
 
     private void fileMenuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuExitActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:        
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }//GEN-LAST:event_fileMenuExitActionPerformed
 
@@ -601,8 +612,10 @@ public class GUI extends javax.swing.JFrame {
             sb.append("Changelog:\n");
             sb.append("\t- Added preview of palette for FRMs.\n");
             sb.append("\t- Changed default item colors.\n");
+            sb.append("\t- Changed description of step 1 in \"How to use\" [Randall].\n");
             sb.append("\t- Fixed bad quality FRM images.\n");
             sb.append("\t- Fixed missing custom color for resources.\n");
+            sb.append("\t- Fixed color not updating for buttons [Randall].\n");
             sb.append("\n");
             sb.append("Objective:\n");
             sb.append("\tThe purpose of this program is\n");
@@ -619,9 +632,10 @@ public class GUI extends javax.swing.JFrame {
 
     private void btnContainerColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContainerColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Container Color", this.highligther.getContainerColor());
+        Color color = JColorChooser.showDialog(this, "Choose Container Color", GUI.cfg.getContainerColor());
         if (color != null) {
-            this.highligther.setContainerColor(color);
+            GUI.cfg.setContainerColor(color);
+            this.btnContainerColor.setBackground(color);
         }
     }//GEN-LAST:event_btnContainerColorActionPerformed
 
@@ -634,7 +648,8 @@ public class GUI extends javax.swing.JFrame {
             sb.append("<html><b>check About. Make sure that you checked it first.</b></html>\n");
             sb.append("\n");
             sb.append("- Applying highlighther consists of several steps:\n");
-            sb.append("\t1. You need to find raw game files (.png and .FRM) for highlighther tool,\n");
+            sb.append("\t1. Extract fallout.dat, data01.zip, data03.zip, and data04.zip (in that order) to a single location, replace when prompted.\n");
+            sb.append("\tYou will need a tool like DatExplorer to extract fallout.dat.\n");
             sb.append("\t2. Choose input directory where \"art > items\" is,\n");
             sb.append("\t3. Choose output where colorized items are gonna be stored,\n");
             sb.append("\t4. (Optional) Choose custom colors for the item categories,\n");
@@ -654,19 +669,21 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_infoMenuHelpActionPerformed
 
-    private void btnContainerColor1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnContainerColor1ActionPerformed
+    private void btnResourceColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResourceColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Resource Color", this.highligther.getResourcesColor());
+        Color color = JColorChooser.showDialog(this, "Choose Resource Color", GUI.cfg.getResourcesColor());
         if (color != null) {
-            this.highligther.setResourcesColor(color);
+            GUI.cfg.setResourcesColor(color);
+            this.btnResourceColor.setBackground(color);
         }
-    }//GEN-LAST:event_btnContainerColor1ActionPerformed
+    }//GEN-LAST:event_btnResourceColorActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
         FO2HLogger.init(args.length > 0 && args[0].equals("-debug"));
+        cfg.readConfigFile();
         Palette.load("Fallout Palette.act");
         try {
             UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
@@ -677,7 +694,6 @@ public class GUI extends javax.swing.JFrame {
         //</editor-fold>
 
         //</editor-fold>
-
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
@@ -687,6 +703,14 @@ public class GUI extends javax.swing.JFrame {
                 gui.pack();
             }
         });
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                cfg.writeConfigFile();
+            }
+        });
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -694,10 +718,10 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnChooseInPath;
     private javax.swing.JButton btnChoosePathOut;
     private javax.swing.JButton btnContainerColor;
-    private javax.swing.JButton btnContainerColor1;
     private javax.swing.JButton btnGo;
     private javax.swing.JButton btnImplantColor;
     private javax.swing.JButton btnOreColor;
+    private javax.swing.JButton btnResourceColor;
     private javax.swing.JButton btnT0Color;
     private javax.swing.JButton btnT1Color;
     private javax.swing.JButton btnT2Color;

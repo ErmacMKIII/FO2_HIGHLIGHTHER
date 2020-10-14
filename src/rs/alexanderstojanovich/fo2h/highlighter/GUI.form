@@ -360,14 +360,14 @@
             <Property name="text" type="java.lang.String" value="Resource Color:"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="btnContainerColor1">
+        <Component class="javax.swing.JButton" name="btnResourceColor">
           <Properties>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="null"/>
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnContainerColor1ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnResourceColorActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblContainerColor">

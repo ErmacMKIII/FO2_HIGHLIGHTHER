@@ -50,6 +50,7 @@ public class Highligther {
     private static final String TEXTFILE = "Dictionary.txt";
 
     private float progress = 0.0f;
+    private final Configuration config;
 
     public static enum Obj {
         UNUSED,
@@ -63,38 +64,12 @@ public class Highligther {
 
     public static final Map<String, Obj> DICTIONARY = new HashMap<>();
 
-    private static final Color DEF_IMPLANT_COLOR = new Color(252, 0, 0);
-
-    private static final Color DEF_T4_COLOR = new Color(196, 96, 168);
-    private static final Color DEF_T3_COLOR = new Color(0, 108, 0);
-    private static final Color DEF_T2_COLOR = new Color(48, 88, 140);
-    private static final Color DEF_T1_COLOR = new Color(192, 96, 0);
-    private static final Color DEF_T0_COLOR = new Color(128, 128, 128);
-
-    private static final Color DEF_BOOK_COLOR = new Color(228, 216, 12);
-    private static final Color DEF_ORE_COLOR = new Color(240, 236, 208);
-    private static final Color DEF_RESOURCE_COLOR = new Color(144, 76, 44);
-    private static final Color DEF_CONTAINER_COLOR = new Color(60, 248, 0);
-
-    private static final Color DEF_UNUSED_COLOR = new Color(252, 176, 176);
-
-    private Color implantColor = DEF_IMPLANT_COLOR;
-    private Color t4Color = DEF_T4_COLOR;
-    private Color t3Color = DEF_T3_COLOR;
-    private Color t2Color = DEF_T2_COLOR;
-    private Color t1Color = DEF_T1_COLOR;
-    private Color t0Color = DEF_T0_COLOR;
-    private Color bookColor = DEF_BOOK_COLOR;
-    private Color oreColor = DEF_ORE_COLOR;
-    private Color resourcesColor = DEF_RESOURCE_COLOR;
-    private Color containerColor = DEF_CONTAINER_COLOR;
-    private Color unusedColor = DEF_UNUSED_COLOR;
-
     private final JPanel colorPanel;
     // via several labels coloured differently
     private final JLabel[] colorVector = new JLabel[256];
 
-    public Highligther(JPanel colorPanel) {
+    public Highligther(Configuration config, JPanel colorPanel) {
+        this.config = config;
         this.colorPanel = colorPanel;
         initDictionary();
         initColorPanel();
@@ -131,7 +106,7 @@ public class Highligther {
     // init Palette display (it's called Color Vector)
     private void initColorPanel() {
         int[] colors = Palette.getColors();
-        if (colors != null) {
+        if (colors != null && config.isShowPalette()) {
             for (int i = 0; i < colorVector.length; i++) {
                 colorVector[i] = new JLabel();
                 colorVector[i].setBackground(Color.BLACK);
@@ -155,53 +130,53 @@ public class Highligther {
         Obj obj = DICTIONARY.getOrDefault(extLessFilename.toLowerCase(), Obj.UNUSED);
         switch (obj) {
             case IMPLANTS:
-                result = implantColor;
+                result = config.getImplantColor();
                 break;
             case T4_WEAPONS:
             case T4_ARMORS:
             case T4_AMMO:
             case T4_ITEMS:
-                result = t4Color;
+                result = config.getT4Color();
                 break;
             case T3_WEAPONS:
             case T3_ARMORS:
             case T3_AMMO:
             case T3_ITEMS:
-                result = t3Color;
+                result = config.getT3Color();
                 break;
             case T2_WEAPONS:
             case T2_ARMORS:
             case T2_AMMO:
             case T2_ITEMS:
-                result = t2Color;
+                result = config.getT2Color();
                 break;
             case T1_WEAPONS:
             case T1_ARMORS:
             case T1_AMMO:
             case T1_ITEMS:
-                result = t1Color;
+                result = config.getT1Color();
                 break;
             case T0_WEAPONS:
             case T0_ARMORS:
             case T0_AMMO:
             case T0_ITEMS:
-                result = t0Color;
+                result = config.getT0Color();
                 break;
             case BOOKS:
-                result = bookColor;
+                result = config.getBookColor();
                 break;
             case ORES:
-                result = oreColor;
+                result = config.getOreColor();
                 break;
             case RESOURCES:
-                result = resourcesColor;
+                result = config.getResourcesColor();
                 break;
             case CONTAINERS:
-                result = containerColor;
+                result = config.getContainerColor();
                 break;
             case UNUSED:
             default:
-                result = unusedColor;
+                result = config.getUnusedColor();
                 break;
         }
         return result;
@@ -351,17 +326,7 @@ public class Highligther {
     }
 
     public void reset() {
-        implantColor = DEF_IMPLANT_COLOR;
-        t4Color = DEF_T4_COLOR;
-        t3Color = DEF_T3_COLOR;
-        t2Color = DEF_T2_COLOR;
-        t1Color = DEF_T1_COLOR;
-        t0Color = DEF_T0_COLOR;
-        bookColor = DEF_BOOK_COLOR;
-        oreColor = DEF_ORE_COLOR;
-        containerColor = DEF_CONTAINER_COLOR;
-        resourcesColor = DEF_RESOURCE_COLOR;
-        unusedColor = DEF_UNUSED_COLOR;
+        config.reset();
         DICTIONARY.clear();
         initDictionary();
         initColorPanel();
@@ -370,94 +335,6 @@ public class Highligther {
 
     public float getProgress() {
         return progress;
-    }
-
-    public Color getImplantColor() {
-        return implantColor;
-    }
-
-    public void setImplantColor(Color implantColor) {
-        this.implantColor = implantColor;
-    }
-
-    public Color getT4Color() {
-        return t4Color;
-    }
-
-    public void setT4Color(Color t4Color) {
-        this.t4Color = t4Color;
-    }
-
-    public Color getT3Color() {
-        return t3Color;
-    }
-
-    public void setT3Color(Color t3Color) {
-        this.t3Color = t3Color;
-    }
-
-    public Color getT2Color() {
-        return t2Color;
-    }
-
-    public void setT2Color(Color t2Color) {
-        this.t2Color = t2Color;
-    }
-
-    public Color getT1Color() {
-        return t1Color;
-    }
-
-    public void setT1Color(Color t1Color) {
-        this.t1Color = t1Color;
-    }
-
-    public Color getT0Color() {
-        return t0Color;
-    }
-
-    public void setT0Color(Color t0Color) {
-        this.t0Color = t0Color;
-    }
-
-    public Color getBookColor() {
-        return bookColor;
-    }
-
-    public void setBookColor(Color bookColor) {
-        this.bookColor = bookColor;
-    }
-
-    public Color getOreColor() {
-        return oreColor;
-    }
-
-    public void setOreColor(Color oreColor) {
-        this.oreColor = oreColor;
-    }
-
-    public Color getContainerColor() {
-        return containerColor;
-    }
-
-    public void setContainerColor(Color containerColor) {
-        this.containerColor = containerColor;
-    }
-
-    public Color getUnusedColor() {
-        return unusedColor;
-    }
-
-    public void setUnusedColor(Color unusedColor) {
-        this.unusedColor = unusedColor;
-    }
-
-    public Color getResourcesColor() {
-        return resourcesColor;
-    }
-
-    public void setResourcesColor(Color resourcesColor) {
-        this.resourcesColor = resourcesColor;
     }
 
 }
