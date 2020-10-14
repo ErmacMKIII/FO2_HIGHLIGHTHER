@@ -33,8 +33,8 @@ public class Configuration {
 
     private static final String CONFIG_PATH = "fo2_highlighter.ini";
 
-    private static final String INPUT_DIR_PATH = System.getProperty("user.home");
-    private static final String OUTPUT_DIR_PATH = System.getProperty("user.home");
+    private static final String INPUT_DIR_PATH = "";
+    private static final String OUTPUT_DIR_PATH = "";
 
     private static final Color DEF_IMPLANT_COLOR = new Color(252, 0, 0);
 
@@ -65,9 +65,6 @@ public class Configuration {
 
     private File inDir = new File(INPUT_DIR_PATH);
     private File outDir = new File(OUTPUT_DIR_PATH);
-
-    private boolean showPalette = true;
-    private boolean debug = false;
 
     private Color readRGB(String str) {
         String[] split = str.trim().split("^\\(|,|\\)$");
@@ -136,12 +133,6 @@ public class Configuration {
                             case "UnusedColor":
                                 unusedColor = readRGB(words[1]);
                                 break;
-                            case "ShowPalette":
-                                showPalette = Boolean.parseBoolean(words[1]);
-                                break;
-                            case "Debug":
-                                debug = Boolean.parseBoolean(words[1]);
-                                break;
                         }
                     }
                 }
@@ -172,8 +163,8 @@ public class Configuration {
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(cfg);
-            pw.println("InputDirPath = " + "\"" + inDir.getAbsolutePath() + "\"");
-            pw.println("OutputDirPath = " + "\"" + outDir.getAbsolutePath() + "\"");
+            pw.println("InputDirPath = " + "\"" + inDir.getPath() + "\"");
+            pw.println("OutputDirPath = " + "\"" + outDir.getPath() + "\"");
             pw.println();
             pw.println("ImplantColor = " + writeRGB(implantColor));
             pw.println("T4Color = " + writeRGB(t4Color));
@@ -189,8 +180,6 @@ public class Configuration {
             pw.println();
             pw.println("UnusuedColor = " + writeRGB(unusedColor));
             pw.println();
-            pw.println("ShowPalette = " + showPalette);
-            pw.println("Debug = " + debug);
         } catch (FileNotFoundException ex) {
             FO2HLogger.reportError(ex.getMessage(), ex);
         } finally {
@@ -216,9 +205,6 @@ public class Configuration {
 
         inDir = new File(INPUT_DIR_PATH);
         outDir = new File(OUTPUT_DIR_PATH);
-
-        showPalette = true;
-        debug = true;
 
         // read config file if it exists
         readConfigFile();
@@ -326,22 +312,6 @@ public class Configuration {
 
     public void setOutDir(File outDir) {
         this.outDir = outDir;
-    }
-
-    public boolean isShowPalette() {
-        return showPalette;
-    }
-
-    public void setShowPalette(boolean showPalette) {
-        this.showPalette = showPalette;
-    }
-
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
     }
 
 }

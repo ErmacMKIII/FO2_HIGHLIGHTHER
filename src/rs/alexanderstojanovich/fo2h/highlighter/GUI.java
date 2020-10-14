@@ -21,7 +21,6 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,6 @@ public class GUI extends javax.swing.JFrame {
     public static final String LICENSE_LOGO_FILE_NAME = "gplv3_logo.png";
 
     private final Highligther highligther;
-    private File inDir, outDir;
 
     /**
      * Creates new form GUI
@@ -62,7 +60,17 @@ public class GUI extends javax.swing.JFrame {
         this.highligther = new Highligther(cfg, pnlPalette);
         initFO2HLogos();
         initColors();
+        initPaths();
         initPosition();
+    }
+
+    private void initPaths() {
+        this.txtFldInPath.setText(cfg.getInDir().getPath());
+        this.txtFldOutPath.setText(cfg.getOutDir().getPath());
+        if (!cfg.getInDir().getPath().isEmpty()
+                && !cfg.getOutDir().getPath().isEmpty()) {
+            btnGo.setEnabled(true);
+        }
     }
 
     // Center the GUI window into center of the screen
@@ -102,11 +110,12 @@ public class GUI extends javax.swing.JFrame {
     private void fileInOpen() {
         int returnVal = fileChooserInput.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            inDir = fileChooserInput.getSelectedFile();
-            txtFldInPath.setText(inDir.getAbsolutePath());
-            txtFldInPath.setToolTipText(inDir.getAbsolutePath());
+            cfg.setInDir(fileChooserInput.getSelectedFile());
+            txtFldInPath.setText(cfg.getInDir().getPath());
+            txtFldInPath.setToolTipText(cfg.getInDir().getPath());
         }
-        if (inDir != null && outDir != null) {
+        if (!cfg.getInDir().getPath().isEmpty()
+                && !cfg.getOutDir().getPath().isEmpty()) {
             btnGo.setEnabled(true);
         }
     }
@@ -114,11 +123,12 @@ public class GUI extends javax.swing.JFrame {
     private void fileOutOpen() {
         int returnVal = fileChooserOutput.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            outDir = fileChooserOutput.getSelectedFile();
-            txtFldOutPath.setText(outDir.getAbsolutePath());
-            txtFldOutPath.setToolTipText(outDir.getAbsolutePath());
+            cfg.setOutDir(fileChooserOutput.getSelectedFile());
+            txtFldOutPath.setText(cfg.getOutDir().getPath());
+            txtFldOutPath.setToolTipText(cfg.getOutDir().getPath());
         }
-        if (inDir != null && outDir != null) {
+        if (!cfg.getInDir().getPath().isEmpty()
+                && !cfg.getOutDir().getPath().isEmpty()) {
             btnGo.setEnabled(true);
         }
     }
@@ -473,7 +483,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void btnGoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGoActionPerformed
         // TODO add your handling code here:                                
-        if (!inDir.exists()) {
+        if (!cfg.getInDir().exists()) {
             JOptionPane.showMessageDialog(GUI.this, "Input directory doesn't exist!", "Input directory error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -492,10 +502,11 @@ public class GUI extends javax.swing.JFrame {
             @Override
             public void run() {
                 fileMenuReset.setEnabled(false);
-                highligther.work(inDir, outDir);
+                highligther.work();
                 progBarWork.setValue(Math.round(highligther.getProgress()));
                 progBarWork.validate();
                 JOptionPane.showMessageDialog(GUI.this, "Highlighter work successfully finished!", "Work Finished", JOptionPane.INFORMATION_MESSAGE);
+                progBarWork.setValue(0);
                 timer.cancel();
                 fileMenuReset.setEnabled(true);
             }
@@ -591,13 +602,12 @@ public class GUI extends javax.swing.JFrame {
 
     private void fileMenuResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuResetActionPerformed
         // TODO add your handling code here:
+        cfg.readConfigFile();
         Palette.reset();
         Palette.load("Fallout Palette.act");
         highligther.reset();
         initColors();
-        txtFldInPath.setText("");
-        txtFldOutPath.setText("");
-        btnGo.setEnabled(false);
+        initPaths();
     }//GEN-LAST:event_fileMenuResetActionPerformed
 
     private void infoMenuAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoMenuAboutActionPerformed
@@ -605,7 +615,7 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION v1.1 - GOTHS (PUBLIC BUILD reviewed on 2020-10-14 at 04:00).</b></html>\n");
+            sb.append("<html><b>VERSION v1.1 - GOTHS (PUBLIC BUILD reviewed on 2020-10-14 at 10:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
@@ -655,7 +665,7 @@ public class GUI extends javax.swing.JFrame {
             sb.append("\t4. (Optional) Choose custom colors for the item categories,\n");
             sb.append("\t5. Click GO to start the work and wait to complete.\n");
             sb.append("\n");
-            sb.append("\tRepeat steps 1-5 for \"art > scenery_new\".\n");
+            sb.append("\tRepeat steps 2-5 for \"art > scenery_new\".\n");
             sb.append("\n");
             sb.append("\t[Tip] If you wanna change items categories alter \"Dictionary.txt.\"\n");
             sb.append("\tDo it with caution.\n");

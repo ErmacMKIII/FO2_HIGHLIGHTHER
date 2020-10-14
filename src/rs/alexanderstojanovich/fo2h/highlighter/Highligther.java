@@ -106,7 +106,7 @@ public class Highligther {
     // init Palette display (it's called Color Vector)
     private void initColorPanel() {
         int[] colors = Palette.getColors();
-        if (colors != null && config.isShowPalette()) {
+        if (colors != null) {
             for (int i = 0; i < colorVector.length; i++) {
                 colorVector[i] = new JLabel();
                 colorVector[i].setBackground(Color.BLACK);
@@ -185,27 +185,24 @@ public class Highligther {
     /**
      * Start highlighter working.
      *
-     * @param inDir path to input directory (where files are fetched from)
-     * @param outDir path to output directory (where modified files are stored
-     * to)
      */
-    public void work(File inDir, File outDir) {
+    public void work() {
         progress = 0.0f;
-        if (!inDir.exists()) {
+        if (!config.getInDir().exists()) {
             progress = 100.0f;
             return;
         }
 
-        if (!outDir.exists()) {
-            outDir.mkdirs();
+        if (!config.getOutDir().exists()) {
+            config.getOutDir().mkdirs();
         }
 
-        if (inDir.isDirectory()) {
-            File[] fileArray = inDir.listFiles();
+        if (config.getInDir().isDirectory()) {
+            File[] fileArray = config.getInDir().listFiles();
             for (File srcFile : fileArray) {
                 // if file is fofrm copy it to the output                                      
                 if (srcFile.getName().toLowerCase().endsWith(".fofrm")) {
-                    File dstFile = new File(outDir + File.separator + srcFile.getName());
+                    File dstFile = new File(config.getOutDir() + File.separator + srcFile.getName());
                     try {
                         Files.copy(srcFile.toPath(), dstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException ex) {
@@ -266,7 +263,7 @@ public class Highligther {
                                 srcFRM.getOffset(),
                                 imgDst
                         );
-                        File outFile = new File(outDir + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
+                        File outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
                         dstFRM.write(outFile);
                     } else if (srcFile.getName().toLowerCase().endsWith(".png")) {
                         BufferedImage imgSrc = null;
@@ -309,7 +306,7 @@ public class Highligther {
                                 }
                             }
 
-                            File outFile = new File(outDir + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".png"));
+                            File outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".png"));
 
                             try {
                                 ImageIO.write(imgDst, "png", outFile);
