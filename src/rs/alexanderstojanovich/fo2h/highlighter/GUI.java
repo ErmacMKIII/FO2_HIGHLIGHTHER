@@ -17,7 +17,9 @@
 package rs.alexanderstojanovich.fo2h.highlighter;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
@@ -47,7 +49,7 @@ public class GUI extends javax.swing.JFrame {
     public static final String RESOURCES_DIR = "/rs/alexanderstojanovich/fo2h/res/";
     public static final String LICENSE_LOGO_FILE_NAME = "gplv3_logo.png";
 
-    private final Highligther highligther = new Highligther();
+    private final Highligther highligther;
     private File inDir, outDir;
 
     /**
@@ -55,8 +57,16 @@ public class GUI extends javax.swing.JFrame {
      */
     public GUI() {
         initComponents();
+        this.highligther = new Highligther(pnlPalette);
         initFO2HLogos();
         initColors();
+        initPosition();
+    }
+
+    // Center the GUI window into center of the screen
+    private void initPosition() {
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
     }
 
     // init both logos
@@ -129,6 +139,7 @@ public class GUI extends javax.swing.JFrame {
         txtFldInPath = new javax.swing.JTextField();
         btnChoosePathOut = new javax.swing.JButton();
         txtFldOutPath = new javax.swing.JTextField();
+        pnlPalette = new javax.swing.JPanel();
         pnlOutlineColors = new javax.swing.JPanel();
         lblImplantColor = new javax.swing.JLabel();
         btnImplantColor = new javax.swing.JButton();
@@ -170,12 +181,16 @@ public class GUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("FOnline2 Highlighter - GOTHS");
         setResizable(false);
+        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
         pnlFilePaths.setBorder(javax.swing.BorderFactory.createTitledBorder("Directory Paths"));
 
         lblOutput.setText("Output data directory:");
 
+        btnChooseInPath.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/dir_icon.png"))); // NOI18N
         btnChooseInPath.setText("Input dir...");
+        btnChooseInPath.setToolTipText("Choose input directory");
+        btnChooseInPath.setIconTextGap(16);
         btnChooseInPath.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnChooseInPathActionPerformed(evt);
@@ -186,7 +201,9 @@ public class GUI extends javax.swing.JFrame {
 
         txtFldInPath.setEditable(false);
 
+        btnChoosePathOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/dir_icon.png"))); // NOI18N
         btnChoosePathOut.setText("Output dir...");
+        btnChoosePathOut.setToolTipText("Choose output directory");
         btnChoosePathOut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnChoosePathOutActionPerformed(evt);
@@ -206,14 +223,19 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(lblOutput))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtFldOutPath, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
-                    .addComponent(txtFldInPath))
+                    .addComponent(txtFldOutPath, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                    .addComponent(txtFldInPath, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnChooseInPath, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnChoosePathOut))
+                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnChoosePathOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnChooseInPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
+
+        pnlFilePathsLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnChooseInPath, btnChoosePathOut});
+
+        pnlFilePathsLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {txtFldInPath, txtFldOutPath});
+
         pnlFilePathsLayout.setVerticalGroup(
             pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlFilePathsLayout.createSequentialGroup()
@@ -229,6 +251,15 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(btnChoosePathOut))
                 .addContainerGap())
         );
+
+        pnlFilePathsLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {txtFldInPath, txtFldOutPath});
+
+        getContentPane().add(pnlFilePaths);
+
+        pnlPalette.setBorder(javax.swing.BorderFactory.createTitledBorder("Palette"));
+        pnlPalette.setPreferredSize(new java.awt.Dimension(480, 480));
+        pnlPalette.setLayout(new java.awt.GridLayout(16, 16, 1, 1));
+        getContentPane().add(pnlPalette);
 
         pnlOutlineColors.setBorder(javax.swing.BorderFactory.createTitledBorder("Outline Colors"));
         pnlOutlineColors.setLayout(new java.awt.GridLayout(11, 2, 2, 2));
@@ -365,17 +396,23 @@ public class GUI extends javax.swing.JFrame {
         });
         pnlOutlineColors.add(btnUnusedColor);
 
+        getContentPane().add(pnlOutlineColors);
+
         btnGo.setForeground(new java.awt.Color(51, 255, 51));
+        btnGo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/avenger.png"))); // NOI18N
         btnGo.setText("GO");
         btnGo.setToolTipText("Get the highlighter working");
         btnGo.setEnabled(false);
+        btnGo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnGo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGoActionPerformed(evt);
             }
         });
+        getContentPane().add(btnGo);
 
         progBarWork.setStringPainted(true);
+        getContentPane().add(progBarWork);
 
         mainMenuFile.setText("File");
 
@@ -418,36 +455,6 @@ public class GUI extends javax.swing.JFrame {
         mainMenu.add(mainMenuInfo);
 
         setJMenuBar(mainMenu);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnGo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(progBarWork, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(pnlOutlineColors, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(pnlFilePaths, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(pnlFilePaths, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
-                .addComponent(pnlOutlineColors, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnGo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(progBarWork, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 23, Short.MAX_VALUE))
-        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -587,11 +594,13 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION v1.1 - GOTHS (PUBLIC BUILD reviewed on 2020-10-13 at 17:00).</b></html>\n");
+            sb.append("<html><b>VERSION v1.1 - GOTHS (PUBLIC BUILD reviewed on 2020-10-14 at 04:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
             sb.append("Changelog:\n");
+            sb.append("\t- Added preview of palette for FRMs.\n");
+            sb.append("\t- Changed default item colors.\n");
             sb.append("\t- Fixed bad quality FRM images.\n");
             sb.append("\t- Fixed missing custom color for resources.\n");
             sb.append("\n");
@@ -599,7 +608,7 @@ public class GUI extends javax.swing.JFrame {
             sb.append("\tThe purpose of this program is\n");
             sb.append("\tcolorizing onground and scenery items for FOnline series.\n");
             sb.append("\n");
-            sb.append("\tDesignated to use primarily for FOnline2 Season 3.\n");
+            sb.append("\tDesignated to use primarily for FOnline 2 Season 3.\n");
             sb.append("\n");
             sb.append("<html><b>Copyright © 2020</b></html>\n");
             sb.append("<html><b>Alexander \"Ermac\" Stojanovich</b></html>\n");
@@ -633,8 +642,12 @@ public class GUI extends javax.swing.JFrame {
             sb.append("\n");
             sb.append("\tRepeat steps 1-5 for \"art > scenery_new\".\n");
             sb.append("\n");
-            sb.append("\t(Optional) If you wanna change items categories alter \"Dictionary.txt.\"\n");
-            sb.append("\tDo it with caution. Remember to back up your files before you start and where you're done.\n");
+            sb.append("\t[Tip] If you wanna change items categories alter \"Dictionary.txt.\"\n");
+            sb.append("\tDo it with caution.\n");
+            sb.append("\n");
+            sb.append("\t[Tip] Remember to back up your files before you start and where you're done.\n");
+            sb.append("\n");
+            sb.append("\t[Tip] For best results make sure that chosen colors are colors from the palette.\n");
             sb.append("\n");
             ImageIcon icon = new ImageIcon(icon_url);
             JOptionPane.showMessageDialog(this, sb.toString(), "How to use", JOptionPane.INFORMATION_MESSAGE, icon);
@@ -669,7 +682,9 @@ public class GUI extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new GUI().setVisible(true);
+                GUI gui = new GUI();
+                gui.setVisible(true);
+                gui.pack();
             }
         });
     }
@@ -713,6 +728,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JMenu mainMenuInfo;
     private javax.swing.JPanel pnlFilePaths;
     private javax.swing.JPanel pnlOutlineColors;
+    private javax.swing.JPanel pnlPalette;
     private javax.swing.JProgressBar progBarWork;
     private javax.swing.JTextField txtFldInPath;
     private javax.swing.JTextField txtFldOutPath;

@@ -32,8 +32,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 import rs.alexanderstojanovich.fo2h.frm.FRM;
 import rs.alexanderstojanovich.fo2h.frm.ImageData;
+import rs.alexanderstojanovich.fo2h.frm.Palette;
 import rs.alexanderstojanovich.fo2h.util.ColorSample;
 import rs.alexanderstojanovich.fo2h.util.FO2HLogger;
 
@@ -59,23 +63,44 @@ public class Highligther {
 
     public static final Map<String, Obj> DICTIONARY = new HashMap<>();
 
-    private Color implantColor = new Color(255, 0, 0);
-    private Color t4Color = new Color(200, 0, 150);
-    private Color t3Color = new Color(60, 183, 44);
-    private Color t2Color = new Color(0, 175, 255);
-    private Color t1Color = new Color(0, 200, 200);
-    private Color t0Color = new Color(128, 128, 128);
-    private Color bookColor = new Color(255, 255, 0);
-    private Color oreColor = new Color(255, 255, 255);
-    private Color resourcesColor = new Color(0, 255, 255);
-    private Color containerColor = new Color(255, 75, 0);
-    private Color unusedColor = new Color(167, 107, 107);
+    private static final Color DEF_IMPLANT_COLOR = new Color(252, 0, 0);
 
-    public Highligther() {
-        init();
+    private static final Color DEF_T4_COLOR = new Color(196, 96, 168);
+    private static final Color DEF_T3_COLOR = new Color(0, 108, 0);
+    private static final Color DEF_T2_COLOR = new Color(48, 88, 140);
+    private static final Color DEF_T1_COLOR = new Color(192, 96, 0);
+    private static final Color DEF_T0_COLOR = new Color(128, 128, 128);
+
+    private static final Color DEF_BOOK_COLOR = new Color(228, 216, 12);
+    private static final Color DEF_ORE_COLOR = new Color(240, 236, 208);
+    private static final Color DEF_RESOURCE_COLOR = new Color(144, 76, 44);
+    private static final Color DEF_CONTAINER_COLOR = new Color(60, 248, 0);
+
+    private static final Color DEF_UNUSED_COLOR = new Color(252, 176, 176);
+
+    private Color implantColor = DEF_IMPLANT_COLOR;
+    private Color t4Color = DEF_T4_COLOR;
+    private Color t3Color = DEF_T3_COLOR;
+    private Color t2Color = DEF_T2_COLOR;
+    private Color t1Color = DEF_T1_COLOR;
+    private Color t0Color = DEF_T0_COLOR;
+    private Color bookColor = DEF_BOOK_COLOR;
+    private Color oreColor = DEF_ORE_COLOR;
+    private Color resourcesColor = DEF_RESOURCE_COLOR;
+    private Color containerColor = DEF_CONTAINER_COLOR;
+    private Color unusedColor = DEF_UNUSED_COLOR;
+
+    private final JPanel colorPanel;
+    // via several labels coloured differently
+    private final JLabel[] colorVector = new JLabel[256];
+
+    public Highligther(JPanel colorPanel) {
+        this.colorPanel = colorPanel;
+        initDictionary();
+        initColorPanel();
     }
 
-    private void init() {
+    private void initDictionary() {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(TEXTFILE));
@@ -99,6 +124,28 @@ public class Highligther {
                 } catch (IOException ex) {
                     FO2HLogger.reportError(ex.getMessage(), ex);
                 }
+            }
+        }
+    }
+
+    // init Palette display (it's called Color Vector)
+    private void initColorPanel() {
+        int[] colors = Palette.getColors();
+        if (colors != null) {
+            for (int i = 0; i < colorVector.length; i++) {
+                colorVector[i] = new JLabel();
+                colorVector[i].setBackground(Color.BLACK);
+                colorVector[i].setOpaque(true);
+                colorVector[i].setSize(9, 9);
+                colorVector[i].setBorder(new BevelBorder(BevelBorder.RAISED));
+
+                Color col = new Color(Palette.getColors()[i]);
+
+                colorVector[i].setBackground(col);
+                colorVector[i].setToolTipText("Red = " + col.getRed()
+                        + ", Green = " + col.getGreen() + ", Blue = " + col.getBlue());
+
+                colorPanel.add(colorVector[i], new Integer(i));
             }
         }
     }
@@ -304,19 +351,20 @@ public class Highligther {
     }
 
     public void reset() {
-        implantColor = new Color(255, 0, 0);
-        t4Color = new Color(200, 0, 150);
-        t3Color = new Color(60, 183, 44);
-        t2Color = new Color(0, 175, 255);
-        t1Color = new Color(0, 200, 200);
-        t0Color = new Color(128, 128, 128);
-        bookColor = new Color(255, 255, 0);
-        oreColor = new Color(255, 255, 255);
-        containerColor = new Color(255, 75, 0);
-        resourcesColor = new Color(0, 255, 255);
-        unusedColor = new Color(167, 107, 107);
+        implantColor = DEF_IMPLANT_COLOR;
+        t4Color = DEF_T4_COLOR;
+        t3Color = DEF_T3_COLOR;
+        t2Color = DEF_T2_COLOR;
+        t1Color = DEF_T1_COLOR;
+        t0Color = DEF_T0_COLOR;
+        bookColor = DEF_BOOK_COLOR;
+        oreColor = DEF_ORE_COLOR;
+        containerColor = DEF_CONTAINER_COLOR;
+        resourcesColor = DEF_RESOURCE_COLOR;
+        unusedColor = DEF_UNUSED_COLOR;
         DICTIONARY.clear();
-        init();
+        initDictionary();
+        initColorPanel();
         progress = 0.0f;
     }
 

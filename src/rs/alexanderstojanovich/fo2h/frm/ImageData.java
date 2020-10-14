@@ -59,32 +59,26 @@ public class ImageData {
                 int e = width * py + px;
                 int rgb = image.getRGB(px, py);
                 byte index = 0;
-                boolean found = false;
-                // loop through palette colors
-                for (int rgbi : Palette.getColors()) {
-                    // if color from buff image exists in palette
-                    if (rgb == rgbi) {
-                        data[e] = index;
-                        found = true;
-                        break;
-                    }
-                    index++;
-                }
-                // if does not exist find the replacement color
-                if (!found) {
-                    Color col = new Color(rgb, true);
-                    if (col.getAlpha() != 0) {
-                        for (int rgbi : Palette.getColors()) {
-                            Color coli = new Color(rgbi);
-                            if (Math.abs(299 * (col.getRed() - coli.getRed())
-                                    + 587 * (col.getGreen() - coli.getGreen())
-                                    + 114 * (col.getBlue() - coli.getBlue())) <= 1000) {
-                                data[e] = index;
+                Color col = new Color(rgb, true);
+                if (col.getAlpha() != 0) {
+                    int minDeviation = 255 * 1000;
+                    int minIndex = -1;
+                    for (int rgbi : Palette.getColors()) {
+                        Color coli = new Color(rgbi);
+                        int deviation = Math.abs(299 * (col.getRed() - coli.getRed())
+                                + 587 * (col.getGreen() - coli.getGreen())
+                                + 114 * (col.getBlue() - coli.getBlue()));
+                        if (deviation < minDeviation) {
+                            minDeviation = deviation;
+                            minIndex = index;
+                            if (deviation == 0) {
                                 break;
                             }
-                            index++;
                         }
+                        index++;
                     }
+
+                    data[e] = (byte) minIndex;
                 }
             }
         }
