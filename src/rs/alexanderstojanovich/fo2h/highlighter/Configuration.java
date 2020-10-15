@@ -39,15 +39,15 @@ public class Configuration {
     private static final Color DEF_IMPLANT_COLOR = new Color(252, 0, 0);
 
     private static final Color DEF_T4_COLOR = new Color(196, 96, 168);
-    private static final Color DEF_T3_COLOR = new Color(0, 108, 0);
+    private static final Color DEF_T3_COLOR = new Color(60, 248, 0);
     private static final Color DEF_T2_COLOR = new Color(48, 88, 140);
-    private static final Color DEF_T1_COLOR = new Color(192, 96, 0);
+    private static final Color DEF_T1_COLOR = new Color(100, 60, 20);
     private static final Color DEF_T0_COLOR = new Color(128, 128, 128);
 
     private static final Color DEF_BOOK_COLOR = new Color(228, 216, 12);
-    private static final Color DEF_ORE_COLOR = new Color(240, 236, 208);
-    private static final Color DEF_RESOURCE_COLOR = new Color(144, 76, 44);
-    private static final Color DEF_CONTAINER_COLOR = new Color(60, 248, 0);
+    private static final Color DEF_ORE_COLOR = new Color(56, 12, 52);
+    private static final Color DEF_RESOURCE_COLOR = new Color(0, 108, 0);
+    private static final Color DEF_CONTAINER_COLOR = new Color(220, 108, 0);
 
     private static final Color DEF_UNUSED_COLOR = new Color(252, 176, 176);
 
@@ -179,7 +179,6 @@ public class Configuration {
             pw.println("ContainerColor = " + writeRGB(containerColor));
             pw.println();
             pw.println("UnusuedColor = " + writeRGB(unusedColor));
-            pw.println();
         } catch (FileNotFoundException ex) {
             FO2HLogger.reportError(ex.getMessage(), ex);
         } finally {

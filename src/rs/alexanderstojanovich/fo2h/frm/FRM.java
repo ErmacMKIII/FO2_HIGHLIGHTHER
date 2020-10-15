@@ -53,10 +53,12 @@ public class FRM {
     private int pos = 0x0000;
 
     /**
-     * Create blank FRM
+     * Create FRM by reading it from the file
+     *
+     * @param frm frm binary file
      */
-    public FRM() {
-
+    public FRM(File frm) {
+        read(frm);
     }
 
     /**
@@ -69,11 +71,13 @@ public class FRM {
      * @param framesPerDirection number of frames for a particular orientation
      * @param shiftX required X shift array
      * @param shiftY required Y shift array
-     * @param offset frame offset array
+     * @param offset frame offset array (lesser important)
      * @param images array of images
+     * @param offsetsX offset array of X direction for image array
+     * @param offsetsY offset array of Y direction for image array
      */
     public FRM(int version, int fps, int actionFrame, int framesPerDirection,
-            int[] shiftX, int[] shiftY, int[] offset, BufferedImage[] images) {
+            int[] shiftX, int[] shiftY, int[] offset, BufferedImage[] images, int[] offsetsX, int[] offsetsY) {
         this.version = version;
         this.fps = fps;
         this.actionFrame = actionFrame;
@@ -82,10 +86,12 @@ public class FRM {
         this.shiftX = shiftX;
         this.shiftY = shiftY;
         this.offset = offset;
+        int index = 0;
         for (BufferedImage image : images) {
-            frameSize += image.getWidth() * image.getHeight();
-            ImageData imgData = new ImageData(image);
+            frameSize += image.getWidth() * image.getHeight() + 12;
+            ImageData imgData = new ImageData(image, offsetsX[index], offsetsY[index]);
             frames.add(imgData);
+            index++;
         }
     }
 
@@ -110,6 +116,9 @@ public class FRM {
     }
 
     private void storeToFile(File file) {
+        if (file.exists()) {
+            file.delete();
+        }
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file);
@@ -134,7 +143,7 @@ public class FRM {
      *
      * @param file is specified FRM file to read from
      */
-    public void read(File file) {
+    private void read(File file) {
         Arrays.fill(buffer, (byte) 0x00);
         frames.clear();
         if (file.exists()) {
@@ -171,25 +180,32 @@ public class FRM {
         //----------------------------------------------------------------------
         frameSize = ((buffer[pos] & 0xFF) << 24) | ((buffer[pos + 1] & 0xFF) << 16) | ((buffer[pos + 2] & 0xFF) << 8) | (buffer[pos + 3] & 0xFF);
         pos += 4;
-        //----------------------------------------------------------------------        
-        for (int j = 0; j < framesPerDirection; j++) {
-            int width = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
-            pos += 2;
-            int height = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
-            pos += 2;
-            //--------------------------------------------------------------
-            pos += 4;
-            pos += 2;
-            pos += 2;
-            //--------------------------------------------------------------
-            ImageData imgData = new ImageData(width, height);
-            for (int py = 0; py < imgData.getHeight(); py++) {
-                for (int px = 0; px < imgData.getWidth(); px++) {
-                    byte index = buffer[pos++];
-                    imgData.setPixel(px, py, index);
+        //----------------------------------------------------------------------
+        int total = 0;
+        while (total < frameSize) {
+            for (int j = 0; j < framesPerDirection; j++) {
+                final int width = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
+                pos += 2;
+                final int height = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
+                pos += 2;
+                //--------------------------------------------------------------
+                pos += 4;
+                //--------------------------------------------------------------
+                final int offsetX = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
+                pos += 2;
+                final int offsetY = ((buffer[pos] & 0xFF) << 8) | (buffer[pos + 1] & 0xFF);
+                pos += 2;
+                //--------------------------------------------------------------
+                ImageData imgData = new ImageData(width, height, offsetX, offsetY);
+                for (int py = 0; py < imgData.getHeight(); py++) {
+                    for (int px = 0; px < imgData.getWidth(); px++) {
+                        byte index = buffer[pos++];
+                        imgData.setPixel(px, py, index);
+                    }
                 }
+                frames.add(imgData);
+                total += 12 + width * height;
             }
-            frames.add(imgData);
         }
     }
 
@@ -252,16 +268,19 @@ public class FRM {
             buffer[pos + 1] = (byte) (height);
             pos += 2;
             //--------------------------------------------------------------
-            buffer[pos] = 0x0000;
-            buffer[pos + 1] = 0x0000;
-            buffer[pos + 2] = 0x0000;
-            buffer[pos + 3] = 0x0000;
+            final int area = frame.getWidth() * frame.getHeight();
+            buffer[pos] = (byte) (area >> 24);
+            buffer[pos + 1] = (byte) (area >> 16);
+            buffer[pos + 2] = (byte) (area >> 8);
+            buffer[pos + 3] = (byte) (area);
             pos += 4;
-            buffer[pos] = 0x0000;
-            buffer[pos + 1] = 0x0000;
+            final int offsetX = frame.getOffsetX();
+            buffer[pos] = (byte) (offsetX >> 8);
+            buffer[pos + 1] = (byte) (offsetX);
             pos += 2;
-            buffer[pos] = 0x0000;
-            buffer[pos + 1] = 0x0000;
+            final int offsetY = frame.getOffsetY();
+            buffer[pos] = (byte) (offsetY >> 8);
+            buffer[pos + 1] = (byte) (offsetY);
             pos += 2;
             //--------------------------------------------------------------                
             for (int py = 0; py < frame.getHeight(); py++) {

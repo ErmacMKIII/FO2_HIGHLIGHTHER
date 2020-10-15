@@ -213,11 +213,13 @@ public class Highligther {
                     String extLessFilename = srcFile.getName().replaceFirst("[.][^.]+$", "");
                     //----------------------------------------------------------
                     if (srcFile.getName().toLowerCase().endsWith(".frm")) {
-                        FRM srcFRM = new FRM();
-                        srcFRM.read(srcFile);
+                        FRM srcFRM = new FRM(srcFile);
+                        //-----------------------------------------------------
                         List<ImageData> frames = srcFRM.getFrames();
-                        BufferedImage[] imgSrc = new BufferedImage[frames.size()];
-                        BufferedImage[] imgDst = new BufferedImage[frames.size()];
+                        final BufferedImage[] imgSrc = new BufferedImage[frames.size()];
+                        final BufferedImage[] imgDst = new BufferedImage[frames.size()];
+                        final int[] frameOffsetsX = new int[frames.size()];
+                        final int[] frameOffsetsY = new int[frames.size()];
                         for (int i = 0; i < frames.size(); i++) {
                             imgSrc[i] = frames.get(i).toBufferedImage();
                             imgDst[i] = new BufferedImage(imgSrc[i].getWidth() + 2, imgSrc[i].getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
@@ -251,8 +253,11 @@ public class Highligther {
                                     }
                                 }
                             }
-                        }
 
+                            frameOffsetsX[i] = frames.get(i).getOffsetX();
+                            frameOffsetsY[i] = frames.get(i).getOffsetY();
+                        }
+                        //-------------------------------------------------------
                         FRM dstFRM = new FRM(
                                 srcFRM.getVersion(),
                                 srcFRM.getFps(),
@@ -261,21 +266,23 @@ public class Highligther {
                                 srcFRM.getShiftX(),
                                 srcFRM.getShiftY(),
                                 srcFRM.getOffset(),
-                                imgDst
+                                imgDst,
+                                frameOffsetsX,
+                                frameOffsetsY
                         );
                         File outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
                         dstFRM.write(outFile);
                     } else if (srcFile.getName().toLowerCase().endsWith(".png")) {
                         BufferedImage imgSrc = null;
-
+                        //------------------------------------------------------
                         try {
                             imgSrc = ImageIO.read(srcFile);
                         } catch (IOException ex) {
                             FO2HLogger.reportError(ex.getMessage(), ex);
                         }
-
+                        //------------------------------------------------------
                         if (imgSrc != null) {
-                            BufferedImage imgDst = new BufferedImage(imgSrc.getWidth() + 2, imgSrc.getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
+                            final BufferedImage imgDst = new BufferedImage(imgSrc.getWidth() + 2, imgSrc.getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
                             Graphics2D graphics2D = imgDst.createGraphics();
                             graphics2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
                             graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -305,7 +312,7 @@ public class Highligther {
                                     }
                                 }
                             }
-
+                            //--------------------------------------------------
                             File outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".png"));
 
                             try {

@@ -28,6 +28,9 @@ public class ImageData {
     private final int width;
     private final int height;
 
+    private final int offsetX;
+    private final int offsetY;
+
     // Image as raw pixels in row-major format
     // Data says on which pixel is which entry in the palette
     private final byte[] data;
@@ -37,10 +40,14 @@ public class ImageData {
      *
      * @param width width of the pixel area
      * @param height height of the pixel area
+     * @param offsetX frame offset in X direction
+     * @param offsetY frame offset in Y direction
      */
-    public ImageData(int width, int height) {
+    public ImageData(int width, int height, int offsetX, int offsetY) {
         this.width = width;
         this.height = height;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
         this.data = new byte[width * height];
     }
 
@@ -49,8 +56,10 @@ public class ImageData {
      * to the data)
      *
      * @param image original image to get the data from
+     * @param offsetX frame offset in X direction
+     * @param offsetY frame offset in Y direction
      */
-    public ImageData(BufferedImage image) {
+    public ImageData(BufferedImage image, int offsetX, int offsetY) {
         this.width = image.getWidth();
         this.height = image.getHeight();
         this.data = new byte[width * height];
@@ -65,9 +74,9 @@ public class ImageData {
                     int minIndex = -1;
                     for (int rgbi : Palette.getColors()) {
                         Color coli = new Color(rgbi);
-                        int deviation = Math.abs(299 * (col.getRed() - coli.getRed())
-                                + 587 * (col.getGreen() - coli.getGreen())
-                                + 114 * (col.getBlue() - coli.getBlue()));
+                        int deviation = 299 * Math.abs(col.getRed() - coli.getRed())
+                                + 587 * Math.abs(col.getGreen() - coli.getGreen())
+                                + 114 * Math.abs(col.getBlue() - coli.getBlue());
                         if (deviation < minDeviation) {
                             minDeviation = deviation;
                             minIndex = index;
@@ -82,6 +91,8 @@ public class ImageData {
                 }
             }
         }
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
     }
 
     /**
@@ -130,6 +141,14 @@ public class ImageData {
 
     public int getHeight() {
         return height;
+    }
+
+    public int getOffsetX() {
+        return offsetX;
+    }
+
+    public int getOffsetY() {
+        return offsetY;
     }
 
     public byte[] getData() {

@@ -67,6 +67,8 @@ public class GUI extends javax.swing.JFrame {
     private void initPaths() {
         this.txtFldInPath.setText(cfg.getInDir().getPath());
         this.txtFldOutPath.setText(cfg.getOutDir().getPath());
+        this.txtFldInPath.setToolTipText(cfg.getInDir().getPath());
+        this.txtFldOutPath.setToolTipText(cfg.getOutDir().getPath());
         if (!cfg.getInDir().getPath().isEmpty()
                 && !cfg.getOutDir().getPath().isEmpty()) {
             btnGo.setEnabled(true);
@@ -190,7 +192,7 @@ public class GUI extends javax.swing.JFrame {
         fileChooserOutput.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("FOnline2 Highlighter - GOTHS");
+        setTitle("FOnline2 Highlighter - HUNS");
         setResizable(false);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
@@ -594,11 +596,15 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION v1.1 - GOTHS (PUBLIC BUILD reviewed on 2020-10-14 at 10:00).</b></html>\n");
+            sb.append("<html><b>VERSION v1.2 - HUNS (PUBLIC BUILD reviewed on 2020-10-15 at 10:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
-            sb.append("Changelog:\n");
+            sb.append("Changelog for V1.2 HUNS:\n");
+            sb.append("\t- Changed FRM read/write.\n");
+            sb.append("\t- Fixed jumping lockers and safes.\n");
+            sb.append("\n");
+            sb.append("Changelog since V1.1 GOTHS:\n");
             sb.append("\t- Added preview of palette for FRMs.\n");
             sb.append("\t- Changed default item colors.\n");
             sb.append("\t- Changed description of step 1 in \"How to use\" [Randall].\n");
