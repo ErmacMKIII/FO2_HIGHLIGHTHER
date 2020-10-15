@@ -329,11 +329,7 @@ public class Highligther {
         progress = 100.0f;
     }
 
-    public void reset() {
-        config.reset();
-        DICTIONARY.clear();
-        initDictionary();
-        initColorPanel();
+    public void resetProgress() {
         progress = 0.0f;
     }
 

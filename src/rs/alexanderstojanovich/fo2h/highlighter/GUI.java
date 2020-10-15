@@ -480,6 +480,7 @@ public class GUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(GUI.this, "Input directory doesn't exist!", "Input directory error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        btnGo.setEnabled(false);
         final Timer timer = new Timer();
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -498,8 +499,10 @@ public class GUI extends javax.swing.JFrame {
                 progBarWork.setValue(Math.round(highligther.getProgress()));
                 progBarWork.validate();
                 JOptionPane.showMessageDialog(GUI.this, "Highlighter work successfully finished!", "Work Finished", JOptionPane.INFORMATION_MESSAGE);
+                highligther.resetProgress();
                 progBarWork.setValue(0);
                 timer.cancel();
+                btnGo.setEnabled(true);
             }
         };
         workThread.start();
