@@ -582,7 +582,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void btnUnusedColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUnusedColorActionPerformed
         // TODO add your handling code here:
-        Color color = JColorChooser.showDialog(this, "Choose Ore Color", GUI.cfg.getUnusedColor());
+        Color color = JColorChooser.showDialog(this, "Choose Unused Color", GUI.cfg.getUnusedColor());
         if (color != null) {
             GUI.cfg.setUnusedColor(color);
             this.btnUnusedColor.setBackground(color);
@@ -599,7 +599,7 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION v1.2 - HUNS (PUBLIC BUILD reviewed on 2020-10-15 at 10:00).</b></html>\n");
+            sb.append("<html><b>VERSION v1.2 - HUNS (PUBLIC BUILD reviewed on 2020-10-16 at 08:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
