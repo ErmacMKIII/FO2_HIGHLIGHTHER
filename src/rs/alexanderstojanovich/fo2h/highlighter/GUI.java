@@ -147,12 +147,12 @@ public class GUI extends javax.swing.JFrame {
         fileChooserInput = new javax.swing.JFileChooser();
         fileChooserOutput = new javax.swing.JFileChooser();
         pnlFilePaths = new javax.swing.JPanel();
-        lblOutput = new javax.swing.JLabel();
-        btnChooseInPath = new javax.swing.JButton();
         lblInput = new javax.swing.JLabel();
         txtFldInPath = new javax.swing.JTextField();
-        btnChoosePathOut = new javax.swing.JButton();
+        btnChooseInPath = new javax.swing.JButton();
+        lblOutput = new javax.swing.JLabel();
         txtFldOutPath = new javax.swing.JTextField();
+        btnChoosePathOut = new javax.swing.JButton();
         pnlPalette = new javax.swing.JPanel();
         pnlOutlineColors = new javax.swing.JPanel();
         lblImplantColor = new javax.swing.JLabel();
@@ -197,8 +197,13 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
         pnlFilePaths.setBorder(javax.swing.BorderFactory.createTitledBorder("Directory Paths"));
+        pnlFilePaths.setLayout(new java.awt.GridLayout(2, 3));
 
-        lblOutput.setText("Output data directory:");
+        lblInput.setText("Input data directory:");
+        pnlFilePaths.add(lblInput);
+
+        txtFldInPath.setEditable(false);
+        pnlFilePaths.add(txtFldInPath);
 
         btnChooseInPath.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/dir_icon.png"))); // NOI18N
         btnChooseInPath.setText("Input dir...");
@@ -209,10 +214,13 @@ public class GUI extends javax.swing.JFrame {
                 btnChooseInPathActionPerformed(evt);
             }
         });
+        pnlFilePaths.add(btnChooseInPath);
 
-        lblInput.setText("Input data directory:");
+        lblOutput.setText("Output data directory:");
+        pnlFilePaths.add(lblOutput);
 
-        txtFldInPath.setEditable(false);
+        txtFldOutPath.setEditable(false);
+        pnlFilePaths.add(txtFldOutPath);
 
         btnChoosePathOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/dir_icon.png"))); // NOI18N
         btnChoosePathOut.setText("Output dir...");
@@ -222,55 +230,11 @@ public class GUI extends javax.swing.JFrame {
                 btnChoosePathOutActionPerformed(evt);
             }
         });
-
-        txtFldOutPath.setEditable(false);
-
-        javax.swing.GroupLayout pnlFilePathsLayout = new javax.swing.GroupLayout(pnlFilePaths);
-        pnlFilePaths.setLayout(pnlFilePathsLayout);
-        pnlFilePathsLayout.setHorizontalGroup(
-            pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlFilePathsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblInput, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lblOutput))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtFldOutPath, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                    .addComponent(txtFldInPath, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnChoosePathOut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnChooseInPath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-
-        pnlFilePathsLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnChooseInPath, btnChoosePathOut});
-
-        pnlFilePathsLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {txtFldInPath, txtFldOutPath});
-
-        pnlFilePathsLayout.setVerticalGroup(
-            pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlFilePathsLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFldInPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblInput)
-                    .addComponent(btnChooseInPath))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFilePathsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtFldOutPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblOutput)
-                    .addComponent(btnChoosePathOut))
-                .addContainerGap())
-        );
-
-        pnlFilePathsLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {txtFldInPath, txtFldOutPath});
+        pnlFilePaths.add(btnChoosePathOut);
 
         getContentPane().add(pnlFilePaths);
 
         pnlPalette.setBorder(javax.swing.BorderFactory.createTitledBorder("Palette"));
-        pnlPalette.setPreferredSize(new java.awt.Dimension(480, 480));
         pnlPalette.setLayout(new java.awt.GridLayout(16, 16, 1, 1));
         getContentPane().add(pnlPalette);
 
