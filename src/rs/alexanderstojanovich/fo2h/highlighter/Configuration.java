@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2020 Alexander Stojanovich <coas91@rocketmail.com>
+/* 
+ * Copyright (C) 2021 Alexander Stojanovich <coas91@rocketmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,9 @@ public class Configuration {
 
     private File inDir = new File(INPUT_DIR_PATH);
     private File outDir = new File(OUTPUT_DIR_PATH);
+
+    private boolean drawOutline = true;
+    private boolean fillInterior = false;
 
     private Color readRGB(String str) {
         String[] split = str.trim().split("^\\(|,|\\)$");
@@ -133,6 +136,12 @@ public class Configuration {
                             case "UnusedColor":
                                 unusedColor = readRGB(words[1]);
                                 break;
+                            case "DrawOutline":
+                                drawOutline = Boolean.parseBoolean(words[1]);
+                                break;
+                            case "FillInterior":
+                                fillInterior = Boolean.parseBoolean(words[1]);
+                                break;
                         }
                     }
                 }
@@ -179,6 +188,9 @@ public class Configuration {
             pw.println("ContainerColor = " + writeRGB(containerColor));
             pw.println();
             pw.println("UnusuedColor = " + writeRGB(unusedColor));
+            pw.println();
+            pw.println("DrawOutline = " + drawOutline);
+            pw.println("FillInterior = " + fillInterior);
         } catch (FileNotFoundException ex) {
             FO2HLogger.reportError(ex.getMessage(), ex);
         } finally {
@@ -311,6 +323,22 @@ public class Configuration {
 
     public void setOutDir(File outDir) {
         this.outDir = outDir;
+    }
+
+    public boolean isDrawOutline() {
+        return drawOutline;
+    }
+
+    public boolean isFillInterior() {
+        return fillInterior;
+    }
+
+    public void setDrawOutline(boolean drawOutline) {
+        this.drawOutline = drawOutline;
+    }
+
+    public void setFillInterior(boolean fillInterior) {
+        this.fillInterior = fillInterior;
     }
 
 }

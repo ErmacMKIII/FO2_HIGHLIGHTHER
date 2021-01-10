@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2020 Alexander Stojanovich <coas91@rocketmail.com>
+/* 
+ * Copyright (C) 2021 Alexander Stojanovich <coas91@rocketmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,10 @@ import rs.alexanderstojanovich.fo2h.util.FO2HLogger;
  * @author Alexander Stojanovich <coas91@rocketmail.com>
  */
 public class Highligther {
+
+    private static final float LUMA_RED_COEFF = 0.2126f;
+    private static final float LUMA_GREEN_COEFF = 0.7152f;
+    private static final float LUMA_BLUE_COEFF = 0.0722f;
 
     private static final String TEXTFILE = "Dictionary.txt";
 
@@ -125,7 +129,7 @@ public class Highligther {
         }
     }
 
-    private Color getOutlineColor(String extLessFilename) {
+    private Color getItemColor(String extLessFilename) {
         Color result;
         Obj obj = DICTIONARY.getOrDefault(extLessFilename.toLowerCase(), Obj.UNUSED);
         switch (obj) {
@@ -241,15 +245,23 @@ public class Highligther {
                                     }
                                 }
                             }
-                            // outline effect
+                            // outline & fill interior effect
                             WritableRaster wr = imgDst[i].copyData(null);
                             for (int px = 0; px < imgDst[i].getWidth(); px++) {
                                 for (int py = 0; py < imgDst[i].getHeight(); py++) {
                                     Color pixCol = new Color(imgDst[i].getRGB(px, py), true);
                                     // writtable raster must be associated with ARGB image!!
                                     ColorSample cs = ColorSample.getGaussianBlurSample(wr, px, py);
-                                    if (pixCol.getAlpha() == 0 && cs.getAlpha() > 0) {
-                                        imgDst[i].setRGB(px, py, getOutlineColor(extLessFilename).getRGB());
+                                    if (pixCol.getAlpha() > 0 && config.isFillInterior()) {
+                                        final Color itemCol = getItemColor(extLessFilename);
+                                        float luma = (pixCol.getRed() * LUMA_RED_COEFF + pixCol.getGreen() * LUMA_GREEN_COEFF + pixCol.getBlue() * LUMA_BLUE_COEFF) / 255.0f;
+                                        int outRed = Math.min(Math.max(Math.round(luma * itemCol.getRed()), 0), 255);
+                                        int outGreen = Math.min(Math.max(Math.round(luma * itemCol.getGreen()), 0), 255);
+                                        int outBlue = Math.min(Math.max(Math.round(luma * itemCol.getBlue()), 0), 255);
+                                        final Color outCol = new Color(outRed, outGreen, outBlue);
+                                        imgDst[i].setRGB(px, py, outCol.getRGB());
+                                    } else if (pixCol.getAlpha() == 0 && cs.getAlpha() > 0 && config.isDrawOutline()) {
+                                        imgDst[i].setRGB(px, py, getItemColor(extLessFilename).getRGB());
                                     }
                                 }
                             }
@@ -265,7 +277,6 @@ public class Highligther {
                                 srcFRM.getFramesPerDirection(),
                                 srcFRM.getShiftX(),
                                 srcFRM.getShiftY(),
-                                srcFRM.getOffset(),
                                 imgDst,
                                 frameOffsetsX,
                                 frameOffsetsY
@@ -300,15 +311,23 @@ public class Highligther {
                                     }
                                 }
                             }
-                            // outline effect
+                            // outline & fill interior effect
                             WritableRaster wr = imgDst.copyData(null);
                             for (int px = 0; px < imgDst.getWidth(); px++) {
                                 for (int py = 0; py < imgDst.getHeight(); py++) {
                                     Color pixCol = new Color(imgDst.getRGB(px, py), true);
                                     // writtable raster must be associated with ARGB image!!
                                     ColorSample cs = ColorSample.getGaussianBlurSample(wr, px, py);
-                                    if (pixCol.getAlpha() == 0 && cs.getAlpha() > 0) {
-                                        imgDst.setRGB(px, py, getOutlineColor(extLessFilename).getRGB());
+                                    if (pixCol.getAlpha() > 0 && config.isFillInterior()) {
+                                        final Color itemCol = getItemColor(extLessFilename);
+                                        float luma = (pixCol.getRed() * LUMA_RED_COEFF + pixCol.getGreen() * LUMA_GREEN_COEFF + pixCol.getBlue() * LUMA_BLUE_COEFF) / 255.0f;
+                                        int outRed = Math.min(Math.max(Math.round(luma * itemCol.getRed()), 0), 255);
+                                        int outGreen = Math.min(Math.max(Math.round(luma * itemCol.getGreen()), 0), 255);
+                                        int outBlue = Math.min(Math.max(Math.round(luma * itemCol.getBlue()), 0), 255);
+                                        final Color outCol = new Color(outRed, outGreen, outBlue);
+                                        imgDst.setRGB(px, py, outCol.getRGB());
+                                    } else if (pixCol.getAlpha() == 0 && cs.getAlpha() > 0 && config.isDrawOutline()) {
+                                        imgDst.setRGB(px, py, getItemColor(extLessFilename).getRGB());
                                     }
                                 }
                             }

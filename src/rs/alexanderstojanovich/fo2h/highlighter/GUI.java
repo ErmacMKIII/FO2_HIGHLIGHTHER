@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2020 Alexander Stojanovich <coas91@rocketmail.com>
+/* 
+ * Copyright (C) 2021 Alexander Stojanovich <coas91@rocketmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,8 +59,9 @@ public class GUI extends javax.swing.JFrame {
         initComponents();
         this.highligther = new Highligther(cfg, pnlPalette);
         initFO2HLogos();
-        initColors();
-        initPaths();
+        initColors(); // init item colors
+        initPaths(); // init dir paths
+        initMeths(); // init draw methods
         initPosition();
     }
 
@@ -107,6 +108,11 @@ public class GUI extends javax.swing.JFrame {
         this.btnContainerColor.setBackground(cfg.getContainerColor());
         this.btnResourceColor.setBackground(cfg.getResourcesColor());
         this.btnUnusedColor.setBackground(cfg.getUnusedColor());
+    }
+
+    private void initMeths() {
+        this.cbOutline.setSelected(cfg.isDrawOutline());
+        this.cbFillInterior.setSelected(cfg.isFillInterior());
     }
 
     private void fileInOpen() {
@@ -177,8 +183,11 @@ public class GUI extends javax.swing.JFrame {
         btnContainerColor = new javax.swing.JButton();
         lblUnusedColor = new javax.swing.JLabel();
         btnUnusedColor = new javax.swing.JButton();
-        btnGo = new javax.swing.JButton();
+        pnlWork = new javax.swing.JPanel();
+        cbOutline = new javax.swing.JCheckBox();
+        cbFillInterior = new javax.swing.JCheckBox();
         progBarWork = new javax.swing.JProgressBar();
+        btnGo = new javax.swing.JButton();
         mainMenu = new javax.swing.JMenuBar();
         mainMenuFile = new javax.swing.JMenu();
         fileMenuExit = new javax.swing.JMenuItem();
@@ -192,7 +201,9 @@ public class GUI extends javax.swing.JFrame {
         fileChooserOutput.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("FOnline2 Highlighter - HUNS");
+        setTitle("FOnline2 Highlighter - IKAROS");
+        setMinimumSize(new java.awt.Dimension(420, 600));
+        setPreferredSize(new java.awt.Dimension(420, 600));
         setResizable(false);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
@@ -238,7 +249,7 @@ public class GUI extends javax.swing.JFrame {
         pnlPalette.setLayout(new java.awt.GridLayout(16, 16, 1, 1));
         getContentPane().add(pnlPalette);
 
-        pnlOutlineColors.setBorder(javax.swing.BorderFactory.createTitledBorder("Outline Colors"));
+        pnlOutlineColors.setBorder(javax.swing.BorderFactory.createTitledBorder("Item Colors"));
         pnlOutlineColors.setLayout(new java.awt.GridLayout(11, 2, 2, 2));
 
         lblImplantColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -375,21 +386,44 @@ public class GUI extends javax.swing.JFrame {
 
         getContentPane().add(pnlOutlineColors);
 
+        pnlWork.setBorder(javax.swing.BorderFactory.createTitledBorder("Work"));
+        pnlWork.setLayout(new java.awt.GridLayout(2, 2, 2, 2));
+
+        cbOutline.setSelected(true);
+        cbOutline.setText("Draw Outline");
+        cbOutline.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbOutlineActionPerformed(evt);
+            }
+        });
+        pnlWork.add(cbOutline);
+
+        cbFillInterior.setText("Fill Interior");
+        cbFillInterior.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbFillInteriorActionPerformed(evt);
+            }
+        });
+        pnlWork.add(cbFillInterior);
+
+        progBarWork.setPreferredSize(new java.awt.Dimension(70, 35));
+        progBarWork.setStringPainted(true);
+        pnlWork.add(progBarWork);
+
         btnGo.setForeground(new java.awt.Color(51, 255, 51));
         btnGo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/avenger.png"))); // NOI18N
         btnGo.setText("GO");
         btnGo.setToolTipText("Get the highlighter working");
         btnGo.setEnabled(false);
-        btnGo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnGo.setPreferredSize(new java.awt.Dimension(70, 35));
         btnGo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGoActionPerformed(evt);
             }
         });
-        getContentPane().add(btnGo);
+        pnlWork.add(btnGo);
 
-        progBarWork.setStringPainted(true);
-        getContentPane().add(progBarWork);
+        getContentPane().add(pnlWork);
 
         mainMenuFile.setText("File");
 
@@ -442,6 +476,10 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:                                
         if (!cfg.getInDir().exists()) {
             JOptionPane.showMessageDialog(GUI.this, "Input directory doesn't exist!", "Input directory error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (!cfg.isDrawOutline() && !cfg.isFillInterior()) {
+            JOptionPane.showMessageDialog(GUI.this, "Please select at least one drawing method!", "No drawing method error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         btnGo.setEnabled(false);
@@ -563,11 +601,15 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION v1.2 - HUNS (PUBLIC BUILD reviewed on 2020-10-16 at 08:00).</b></html>\n");
+            sb.append("<html><b>VERSION V1.3 - IKAROS (PUBLIC BUILD reviewed on 2021-01-10 at 07:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
-            sb.append("Changelog for V1.2 HUNS:\n");
+            sb.append("Changelog for V1.3 IKAROS:\n");
+            sb.append("\t- Fixed FRM read/write again and so the consequent game crashes.\n");
+            sb.append("\t- User can choose drawing methods.\n");
+            sb.append("\n");
+            sb.append("Changelog since V1.2 HUNS:\n");
             sb.append("\t- Changed FRM read/write.\n");
             sb.append("\t- Fixed jumping lockers and safes.\n");
             sb.append("\n");
@@ -585,7 +627,7 @@ public class GUI extends javax.swing.JFrame {
             sb.append("\n");
             sb.append("\tDesignated to use primarily for FOnline 2 Season 3.\n");
             sb.append("\n");
-            sb.append("<html><b>Copyright © 2020</b></html>\n");
+            sb.append("<html><b>Copyright © 2021</b></html>\n");
             sb.append("<html><b>Alexander \"Ermac\" Stojanovich</b></html>\n");
             ImageIcon icon = new ImageIcon(icon_url);
             JOptionPane.showMessageDialog(this, sb.toString(), "About", JOptionPane.INFORMATION_MESSAGE, icon);
@@ -615,9 +657,10 @@ public class GUI extends javax.swing.JFrame {
             sb.append("\t2. Choose input directory where \"art > items\" is,\n");
             sb.append("\t3. Choose output where colorized items are gonna be stored,\n");
             sb.append("\t4. (Optional) Choose custom colors for the item categories,\n");
-            sb.append("\t5. Click GO to start the work and wait to complete.\n");
+            sb.append("\t5. (Optional) Choose drawing methods for the item categories,\n");
+            sb.append("\t6. Click GO to start the work and wait to complete.\n");
             sb.append("\n");
-            sb.append("\tRepeat steps 2-5 for \"art > scenery_new\".\n");
+            sb.append("\tRepeat steps 2-6 for \"art > scenery_new\".\n");
             sb.append("\n");
             sb.append("\t[Tip] If you wanna change items categories alter \"Dictionary.txt.\"\n");
             sb.append("\tDo it with caution.\n");
@@ -639,6 +682,16 @@ public class GUI extends javax.swing.JFrame {
             this.btnResourceColor.setBackground(color);
         }
     }//GEN-LAST:event_btnResourceColorActionPerformed
+
+    private void cbOutlineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbOutlineActionPerformed
+        // TODO add your handling code here:
+        GUI.cfg.setDrawOutline(this.cbOutline.isSelected());
+    }//GEN-LAST:event_cbOutlineActionPerformed
+
+    private void cbFillInteriorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbFillInteriorActionPerformed
+        // TODO add your handling code here:
+        GUI.cfg.setFillInterior(this.cbFillInterior.isSelected());
+    }//GEN-LAST:event_cbFillInteriorActionPerformed
 
     /**
      * @param args the command line arguments
@@ -690,6 +743,8 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnT3Color;
     private javax.swing.JButton btnT4Color;
     private javax.swing.JButton btnUnusedColor;
+    private javax.swing.JCheckBox cbFillInterior;
+    private javax.swing.JCheckBox cbOutline;
     private javax.swing.JFileChooser fileChooserInput;
     private javax.swing.JFileChooser fileChooserOutput;
     private javax.swing.JMenuItem fileMenuExit;
@@ -714,6 +769,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JPanel pnlFilePaths;
     private javax.swing.JPanel pnlOutlineColors;
     private javax.swing.JPanel pnlPalette;
+    private javax.swing.JPanel pnlWork;
     private javax.swing.JProgressBar progBarWork;
     private javax.swing.JTextField txtFldInPath;
     private javax.swing.JTextField txtFldOutPath;
