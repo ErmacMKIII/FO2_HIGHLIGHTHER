@@ -113,6 +113,7 @@ public class GUI extends javax.swing.JFrame {
     private void initMeths() {
         this.cbOutline.setSelected(cfg.isDrawOutline());
         this.cbFillInterior.setSelected(cfg.isFillInterior());
+        this.cbPutLabels.setSelected(cfg.isPutLabels());
     }
 
     private void fileInOpen() {
@@ -186,8 +187,10 @@ public class GUI extends javax.swing.JFrame {
         pnlWork = new javax.swing.JPanel();
         cbOutline = new javax.swing.JCheckBox();
         cbFillInterior = new javax.swing.JCheckBox();
-        progBarWork = new javax.swing.JProgressBar();
+        cbPutLabels = new javax.swing.JCheckBox();
         btnGo = new javax.swing.JButton();
+        progBarWork = new javax.swing.JProgressBar();
+        btnStop = new javax.swing.JButton();
         mainMenu = new javax.swing.JMenuBar();
         mainMenuFile = new javax.swing.JMenu();
         fileMenuExit = new javax.swing.JMenuItem();
@@ -201,10 +204,11 @@ public class GUI extends javax.swing.JFrame {
         fileChooserOutput.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("FOnline2 Highlighter - IKAROS");
+        setTitle("FOnline2 Highlighter - JAPANESE");
         setMinimumSize(new java.awt.Dimension(420, 600));
         setPreferredSize(new java.awt.Dimension(420, 600));
         setResizable(false);
+        setSize(new java.awt.Dimension(480, 600));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
         pnlFilePaths.setBorder(javax.swing.BorderFactory.createTitledBorder("Directory Paths"));
@@ -387,7 +391,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().add(pnlOutlineColors);
 
         pnlWork.setBorder(javax.swing.BorderFactory.createTitledBorder("Work"));
-        pnlWork.setLayout(new java.awt.GridLayout(2, 2, 2, 2));
+        pnlWork.setLayout(new java.awt.GridLayout(2, 3, 2, 2));
 
         cbOutline.setSelected(true);
         cbOutline.setText("Draw Outline");
@@ -406,9 +410,13 @@ public class GUI extends javax.swing.JFrame {
         });
         pnlWork.add(cbFillInterior);
 
-        progBarWork.setPreferredSize(new java.awt.Dimension(70, 35));
-        progBarWork.setStringPainted(true);
-        pnlWork.add(progBarWork);
+        cbPutLabels.setText("Put Labels");
+        cbPutLabels.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbPutLabelsActionPerformed(evt);
+            }
+        });
+        pnlWork.add(cbPutLabels);
 
         btnGo.setForeground(new java.awt.Color(51, 255, 51));
         btnGo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/avenger.png"))); // NOI18N
@@ -422,6 +430,23 @@ public class GUI extends javax.swing.JFrame {
             }
         });
         pnlWork.add(btnGo);
+
+        progBarWork.setPreferredSize(new java.awt.Dimension(70, 35));
+        progBarWork.setStringPainted(true);
+        pnlWork.add(progBarWork);
+
+        btnStop.setForeground(new java.awt.Color(204, 0, 51));
+        btnStop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/stop.png"))); // NOI18N
+        btnStop.setText("STOP");
+        btnStop.setToolTipText("Interrupts higlighter");
+        btnStop.setEnabled(false);
+        btnStop.setPreferredSize(new java.awt.Dimension(70, 35));
+        btnStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStopActionPerformed(evt);
+            }
+        });
+        pnlWork.add(btnStop);
 
         getContentPane().add(pnlWork);
 
@@ -478,7 +503,7 @@ public class GUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(GUI.this, "Input directory doesn't exist!", "Input directory error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (!cfg.isDrawOutline() && !cfg.isFillInterior()) {
+        if (!cfg.isDrawOutline() && !cfg.isFillInterior() && !cfg.isPutLabels()) {
             JOptionPane.showMessageDialog(GUI.this, "Please select at least one drawing method!", "No drawing method error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -487,7 +512,7 @@ public class GUI extends javax.swing.JFrame {
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                while (highligther.getProgress() < 100.0f) {
+                while (highligther.getProgress() < 100.0f && !highligther.isStopped()) {
                     progBarWork.setValue(Math.round(highligther.getProgress()));
                     progBarWork.validate();
                 }
@@ -497,14 +522,16 @@ public class GUI extends javax.swing.JFrame {
         Thread workThread = new Thread("Work Thread") {
             @Override
             public void run() {
+                btnStop.setEnabled(true);
                 highligther.work();
                 progBarWork.setValue(Math.round(highligther.getProgress()));
                 progBarWork.validate();
-                JOptionPane.showMessageDialog(GUI.this, "Highlighter work successfully finished!", "Work Finished", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(GUI.this, highligther.isStopped() ? "Highlighter work stopped!" : "Highlighter work successfully finished!", "Work Finished", JOptionPane.INFORMATION_MESSAGE);
                 highligther.resetProgress();
                 progBarWork.setValue(0);
                 timer.cancel();
                 btnGo.setEnabled(true);
+                btnStop.setEnabled(false);
             }
         };
         workThread.start();
@@ -601,9 +628,12 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION V1.3 - IKAROS (PUBLIC BUILD reviewed on 2021-01-10 at 07:00).</b></html>\n");
+            sb.append("<html><b>VERSION V1.4 - JAPANESE (PUBLIC BUILD reviewed on 2021-06-15 at 22:15).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
+            sb.append("\n");
+            sb.append("Changelog for V1.4 JAPPANESE:\n");
+            sb.append("\t- Feature to put labels for the items.\n");
             sb.append("\n");
             sb.append("Changelog for V1.3 IKAROS:\n");
             sb.append("\t- Fixed FRM read/write again and so the consequent game crashes.\n");
@@ -693,6 +723,16 @@ public class GUI extends javax.swing.JFrame {
         GUI.cfg.setFillInterior(this.cbFillInterior.isSelected());
     }//GEN-LAST:event_cbFillInteriorActionPerformed
 
+    private void cbPutLabelsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPutLabelsActionPerformed
+        // TODO add your handling code here:
+        GUI.cfg.setPutLabels(this.cbPutLabels.isSelected());
+    }//GEN-LAST:event_cbPutLabelsActionPerformed
+
+    private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
+        // TODO add your handling code here:
+        highligther.setStopped(true);
+    }//GEN-LAST:event_btnStopActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -700,6 +740,7 @@ public class GUI extends javax.swing.JFrame {
         FO2HLogger.init(args.length > 0 && args[0].equals("-debug"));
         cfg.readConfigFile();
         Palette.load("Fallout Palette.act");
+        Highligther.initDictionary();
         try {
             UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
@@ -737,6 +778,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnImplantColor;
     private javax.swing.JButton btnOreColor;
     private javax.swing.JButton btnResourceColor;
+    private javax.swing.JButton btnStop;
     private javax.swing.JButton btnT0Color;
     private javax.swing.JButton btnT1Color;
     private javax.swing.JButton btnT2Color;
@@ -745,6 +787,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnUnusedColor;
     private javax.swing.JCheckBox cbFillInterior;
     private javax.swing.JCheckBox cbOutline;
+    private javax.swing.JCheckBox cbPutLabels;
     private javax.swing.JFileChooser fileChooserInput;
     private javax.swing.JFileChooser fileChooserOutput;
     private javax.swing.JMenuItem fileMenuExit;

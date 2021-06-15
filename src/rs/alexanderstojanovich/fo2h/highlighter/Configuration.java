@@ -17,6 +17,7 @@
 package rs.alexanderstojanovich.fo2h.highlighter;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -68,6 +69,11 @@ public class Configuration {
 
     private boolean drawOutline = true;
     private boolean fillInterior = false;
+    private boolean putLabels = false;
+
+    private String fontName = Font.MONOSPACED;
+    private int fontStyle = Font.BOLD;
+    private int fontSize = 12;
 
     private Color readRGB(String str) {
         String[] split = str.trim().split("^\\(|,|\\)$");
@@ -142,6 +148,18 @@ public class Configuration {
                             case "FillInterior":
                                 fillInterior = Boolean.parseBoolean(words[1]);
                                 break;
+                            case "PutLabels":
+                                putLabels = Boolean.parseBoolean(words[1]);
+                                break;
+                            case "FontName":
+                                fontName = words[1];
+                                break;
+                            case "FontStyle":
+                                fontStyle = Integer.parseInt(words[1]);
+                                break;
+                            case "FontSize":
+                                fontSize = Integer.parseInt(words[1]);
+                                break;
                         }
                     }
                 }
@@ -191,6 +209,11 @@ public class Configuration {
             pw.println();
             pw.println("DrawOutline = " + drawOutline);
             pw.println("FillInterior = " + fillInterior);
+            pw.println();
+            pw.println("PutLabels = " + putLabels);
+            pw.println("FontName = " + fontName);
+            pw.println("FontStyle = " + fontStyle);
+            pw.println("FontSize = " + fontSize);
         } catch (FileNotFoundException ex) {
             FO2HLogger.reportError(ex.getMessage(), ex);
         } finally {
@@ -213,6 +236,15 @@ public class Configuration {
         resourcesColor = DEF_RESOURCE_COLOR;
         containerColor = DEF_CONTAINER_COLOR;
         unusedColor = DEF_UNUSED_COLOR;
+
+        putLabels = false;
+        fontName = Font.MONOSPACED;
+        fontStyle = Font.BOLD;
+        fontSize = 12;
+
+        drawOutline = true;
+        fillInterior = false;
+        putLabels = false;
 
         inDir = new File(INPUT_DIR_PATH);
         outDir = new File(OUTPUT_DIR_PATH);
@@ -339,6 +371,38 @@ public class Configuration {
 
     public void setFillInterior(boolean fillInterior) {
         this.fillInterior = fillInterior;
+    }
+
+    public boolean isPutLabels() {
+        return putLabels;
+    }
+
+    public void setPutLabels(boolean putLabels) {
+        this.putLabels = putLabels;
+    }
+
+    public String getFontName() {
+        return fontName;
+    }
+
+    public void setFontName(String fontName) {
+        this.fontName = fontName;
+    }
+
+    public int getFontStyle() {
+        return fontStyle;
+    }
+
+    public void setFontStyle(int fontStyle) {
+        this.fontStyle = fontStyle;
+    }
+
+    public int getFontSize() {
+        return fontSize;
+    }
+
+    public void setFontSize(int fontSize) {
+        this.fontSize = fontSize;
     }
 
 }

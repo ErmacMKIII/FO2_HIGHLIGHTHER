@@ -17,8 +17,11 @@
 package rs.alexanderstojanovich.fo2h.highlighter;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
@@ -56,40 +59,44 @@ public class Highligther {
     private float progress = 0.0f;
     private final Configuration config;
 
-    public static enum Obj {
-        UNUSED,
-        IMPLANTS, T4_WEAPONS, T4_ARMORS, T4_AMMO, T4_ITEMS,
-        T3_WEAPONS, T3_ARMORS, T3_AMMO, T3_ITEMS,
-        T2_WEAPONS, T2_ARMORS, T2_AMMO, T2_ITEMS,
-        T1_WEAPONS, T1_ARMORS, T1_AMMO, T1_ITEMS,
-        T0_WEAPONS, T0_ARMORS, T0_AMMO, T0_ITEMS,
-        RESOURCES, BOOKS, ORES, CONTAINERS
-    };
+    private final Font myFont;
 
     public static final Map<String, Obj> DICTIONARY = new HashMap<>();
+    public static final Map<String, String> MAPPED_BY = new HashMap<>();
 
     private final JPanel colorPanel;
     // via several labels coloured differently
     private final JLabel[] colorVector = new JLabel[256];
 
+    private boolean stopped = false;
+
     public Highligther(Configuration config, JPanel colorPanel) {
         this.config = config;
         this.colorPanel = colorPanel;
-        initDictionary();
+        this.myFont = new Font(config.getFontName(), config.getFontStyle(), config.getFontSize());
         initColorPanel();
     }
 
-    private void initDictionary() {
+    public static void initDictionary() {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(TEXTFILE));
             String line;
             Obj obj = null;
+            boolean labeled = false;
             while ((line = br.readLine()) != null) {
-                if (line.startsWith("@")) {
+                if (line.trim().equals("@LABELED")) {
+                    labeled = true;
+                } else if (line.startsWith("@") && !line.startsWith("@LABELED")) {
                     obj = Obj.valueOf(line.trim().substring(1));
-                } else {
-                    DICTIONARY.put(line.trim().toLowerCase(), obj);
+                    obj.setLabeled(labeled);
+                    labeled = false;
+                } else if (obj != null) {
+                    String[] things = line.trim().replaceAll("\"", "").split("=>", -1);
+                    DICTIONARY.put(things[0].trim(), obj);
+                    if (obj.isLabeled() && things.length == 2) {
+                        MAPPED_BY.put(things[0].trim(), things[1].trim());
+                    }
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -105,6 +112,8 @@ public class Highligther {
                 }
             }
         }
+
+        FO2HLogger.reportInfo("Dictionary initialized!", null);
     }
 
     // init Palette display (it's called Color Vector)
@@ -129,6 +138,13 @@ public class Highligther {
         }
     }
 
+    /**
+     * Gets item color from the dictionary.
+     *
+     * @param extLessFilename filename without extension as it is written in the
+     * dictionary
+     * @return item color
+     */
     private Color getItemColor(String extLessFilename) {
         Color result;
         Obj obj = DICTIONARY.getOrDefault(extLessFilename.toLowerCase(), Obj.UNUSED);
@@ -187,6 +203,98 @@ public class Highligther {
     }
 
     /**
+     * Remove blue color from the image. Reason - blue is transparent for
+     * Fallout.
+     *
+     * @param img parsed image
+     */
+    public static final void removeBlue(BufferedImage img) {
+        for (int px = 0; px < img.getWidth(); px++) {
+            for (int py = 0; py < img.getHeight(); py++) {
+                Color pixCol = new Color(img.getRGB(px, py), true);
+                if (pixCol.equals(Color.BLUE)) {
+                    img.setRGB(px, py, 0);
+                }
+            }
+        }
+    }
+
+    /**
+     * Create outline around the image.
+     *
+     * @param img parsed image
+     * @param outlineColor color of the outline (around)
+     * @param fillInterior fill interior of the outline
+     * @param drawOutline draws outline around the image
+     */
+    public static final void createOutline(BufferedImage img, Color outlineColor, boolean fillInterior, boolean drawOutline) {
+        // outline & fill interior effect
+        WritableRaster wr = img.copyData(null);
+        for (int px = 0; px < img.getWidth(); px++) {
+            for (int py = 0; py < img.getHeight(); py++) {
+                Color pixCol = new Color(img.getRGB(px, py), true);
+                // writtable raster must be associated with ARGB image!!
+                ColorSample cs = ColorSample.getGaussianBlurSample(wr, px, py);
+                if (pixCol.getAlpha() > 0 && fillInterior) {
+                    final Color itemCol = outlineColor;
+                    float luma = (pixCol.getRed() * LUMA_RED_COEFF + pixCol.getGreen() * LUMA_GREEN_COEFF + pixCol.getBlue() * LUMA_BLUE_COEFF) / 255.0f;
+                    int outRed = Math.min(Math.max(Math.round(luma * itemCol.getRed()), 0), 255);
+                    int outGreen = Math.min(Math.max(Math.round(luma * itemCol.getGreen()), 0), 255);
+                    int outBlue = Math.min(Math.max(Math.round(luma * itemCol.getBlue()), 0), 255);
+                    final Color outCol = new Color(outRed, outGreen, outBlue);
+                    img.setRGB(px, py, outCol.getRGB());
+                } else if (pixCol.getAlpha() == 0 && cs.getAlpha() > 0 && drawOutline) {
+                    img.setRGB(px, py, outlineColor.getRGB());
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * @param img parsed image to put a label on
+     * @param font parsed font
+     * @param label draw string
+     * @param color string color
+     * @param fillInterior fill interior option
+     * @return
+     */
+    public static final BufferedImage putLabel(BufferedImage img, Font font, String label, Color color, boolean fillInterior) {
+        FontRenderContext frc = new FontRenderContext(null, true, true);
+        Rectangle2D strBounds = font.getStringBounds(label, frc);
+        int w = (int) Math.round(strBounds.getWidth());
+        int h = (int) Math.round(strBounds.getHeight());
+
+        BufferedImage result = new BufferedImage(Math.max(w, img.getWidth()) + 2, 2 * (h + 2) + img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D resG2D = result.createGraphics();
+
+        resG2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        resG2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        resG2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        resG2D.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+        resG2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        resG2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+        resG2D.setColor(color);
+        resG2D.drawRoundRect(1, 1, w, h, 1, 1);
+        if (fillInterior) {
+            float luma = (color.getRed() * LUMA_RED_COEFF + color.getGreen() * LUMA_GREEN_COEFF + color.getBlue() * LUMA_BLUE_COEFF) / 255.0f;
+            Color grey = new Color(0.5f * luma, 0.5f * luma, 0.5f * luma, 1.0f);
+            resG2D.setColor(grey);
+            resG2D.fillRoundRect(1, 1, w, h, 1, 1);
+        }
+        resG2D.setColor(color);
+        resG2D.setFont(font);
+        resG2D.translate(0, -strBounds.getY());
+        resG2D.drawString(label, 2, 2);
+        resG2D.drawLine(w / 2 - 1, h / 2 - 1, w / 2 - 1, 2 * (h + 2) - 1);
+
+        resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - img.getHeight()) / 2, null);
+
+        return result;
+    }
+
+    /**
      * Start highlighter working.
      *
      */
@@ -201,9 +309,17 @@ public class Highligther {
             config.getOutDir().mkdirs();
         }
 
+        stopped = false;
+
         if (config.getInDir().isDirectory()) {
             File[] fileArray = config.getInDir().listFiles();
+            FO2HLogger.reportInfo("Detected " + fileArray.length + " files..", null);
             for (File srcFile : fileArray) {
+                if (stopped) {
+                    FO2HLogger.reportInfo("Highlighter stopped!", null);
+                    break;
+                }
+
                 // if file is fofrm copy it to the output                                      
                 if (srcFile.getName().toLowerCase().endsWith(".fofrm")) {
                     File dstFile = new File(config.getOutDir() + File.separator + srcFile.getName());
@@ -231,39 +347,22 @@ public class Highligther {
                             Graphics2D graphics2D = imgDst[i].createGraphics();
                             graphics2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
                             graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                             graphics2D.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
                             graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
                             graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
                             graphics2D.drawImage(imgSrc[i], 1, 1, null);
+
                             // blue color removal
-                            for (int px = 0; px < imgDst[i].getWidth(); px++) {
-                                for (int py = 0; py < imgDst[i].getHeight(); py++) {
-                                    Color pixCol = new Color(imgDst[i].getRGB(px, py), true);
-                                    if (pixCol.equals(Color.BLUE)) {
-                                        imgDst[i].setRGB(px, py, 0);
-                                    }
-                                }
-                            }
+                            removeBlue(imgDst[i]);
                             // outline & fill interior effect
-                            WritableRaster wr = imgDst[i].copyData(null);
-                            for (int px = 0; px < imgDst[i].getWidth(); px++) {
-                                for (int py = 0; py < imgDst[i].getHeight(); py++) {
-                                    Color pixCol = new Color(imgDst[i].getRGB(px, py), true);
-                                    // writtable raster must be associated with ARGB image!!
-                                    ColorSample cs = ColorSample.getGaussianBlurSample(wr, px, py);
-                                    if (pixCol.getAlpha() > 0 && config.isFillInterior()) {
-                                        final Color itemCol = getItemColor(extLessFilename);
-                                        float luma = (pixCol.getRed() * LUMA_RED_COEFF + pixCol.getGreen() * LUMA_GREEN_COEFF + pixCol.getBlue() * LUMA_BLUE_COEFF) / 255.0f;
-                                        int outRed = Math.min(Math.max(Math.round(luma * itemCol.getRed()), 0), 255);
-                                        int outGreen = Math.min(Math.max(Math.round(luma * itemCol.getGreen()), 0), 255);
-                                        int outBlue = Math.min(Math.max(Math.round(luma * itemCol.getBlue()), 0), 255);
-                                        final Color outCol = new Color(outRed, outGreen, outBlue);
-                                        imgDst[i].setRGB(px, py, outCol.getRGB());
-                                    } else if (pixCol.getAlpha() == 0 && cs.getAlpha() > 0 && config.isDrawOutline()) {
-                                        imgDst[i].setRGB(px, py, getItemColor(extLessFilename).getRGB());
-                                    }
-                                }
+                            createOutline(imgDst[i], getItemColor(extLessFilename), config.isFillInterior(), config.isDrawOutline());
+
+                            // label
+                            Obj obj = DICTIONARY.get(extLessFilename);
+                            if (config.isPutLabels() && obj != null && obj.isLabeled()) {
+                                imgDst[i] = putLabel(imgDst[i], myFont, MAPPED_BY.getOrDefault(extLessFilename, extLessFilename), getItemColor(extLessFilename), true);
                             }
 
                             frameOffsetsX[i] = frames.get(i).getOffsetX();
@@ -293,44 +392,27 @@ public class Highligther {
                         }
                         //------------------------------------------------------
                         if (imgSrc != null) {
-                            final BufferedImage imgDst = new BufferedImage(imgSrc.getWidth() + 2, imgSrc.getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
+                            BufferedImage imgDst = new BufferedImage(imgSrc.getWidth() + 2, imgSrc.getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
                             Graphics2D graphics2D = imgDst.createGraphics();
                             graphics2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
                             graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                             graphics2D.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
                             graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
                             graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
                             graphics2D.drawImage(imgSrc, 1, 1, null);
                             // blue color removal
-                            for (int px = 0; px < imgDst.getWidth(); px++) {
-                                for (int py = 0; py < imgDst.getHeight(); py++) {
-                                    Color pixCol = new Color(imgDst.getRGB(px, py), true);
-                                    if (pixCol.equals(Color.BLUE)) {
-                                        imgDst.setRGB(px, py, 0);
-                                    }
-                                }
-                            }
+                            removeBlue(imgDst);
                             // outline & fill interior effect
-                            WritableRaster wr = imgDst.copyData(null);
-                            for (int px = 0; px < imgDst.getWidth(); px++) {
-                                for (int py = 0; py < imgDst.getHeight(); py++) {
-                                    Color pixCol = new Color(imgDst.getRGB(px, py), true);
-                                    // writtable raster must be associated with ARGB image!!
-                                    ColorSample cs = ColorSample.getGaussianBlurSample(wr, px, py);
-                                    if (pixCol.getAlpha() > 0 && config.isFillInterior()) {
-                                        final Color itemCol = getItemColor(extLessFilename);
-                                        float luma = (pixCol.getRed() * LUMA_RED_COEFF + pixCol.getGreen() * LUMA_GREEN_COEFF + pixCol.getBlue() * LUMA_BLUE_COEFF) / 255.0f;
-                                        int outRed = Math.min(Math.max(Math.round(luma * itemCol.getRed()), 0), 255);
-                                        int outGreen = Math.min(Math.max(Math.round(luma * itemCol.getGreen()), 0), 255);
-                                        int outBlue = Math.min(Math.max(Math.round(luma * itemCol.getBlue()), 0), 255);
-                                        final Color outCol = new Color(outRed, outGreen, outBlue);
-                                        imgDst.setRGB(px, py, outCol.getRGB());
-                                    } else if (pixCol.getAlpha() == 0 && cs.getAlpha() > 0 && config.isDrawOutline()) {
-                                        imgDst.setRGB(px, py, getItemColor(extLessFilename).getRGB());
-                                    }
-                                }
+                            createOutline(imgDst, getItemColor(extLessFilename), config.isFillInterior(), config.isDrawOutline());
+
+                            // label
+                            Obj obj = DICTIONARY.get(extLessFilename);
+                            if (config.isPutLabels() && obj != null && obj.isLabeled()) {
+                                imgDst = putLabel(imgDst, myFont, MAPPED_BY.getOrDefault(extLessFilename, extLessFilename), getItemColor(extLessFilename), true);
                             }
+
                             //--------------------------------------------------
                             File outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".png"));
 
@@ -345,6 +427,8 @@ public class Highligther {
                 progress += 100.0f / fileArray.length;
             }
         }
+
+        FO2HLogger.reportInfo("Highlighter work finished!", null);
         progress = 100.0f;
     }
 
@@ -354,6 +438,14 @@ public class Highligther {
 
     public float getProgress() {
         return progress;
+    }
+
+    public boolean isStopped() {
+        return stopped;
+    }
+
+    public void setStopped(boolean stopped) {
+        this.stopped = stopped;
     }
 
 }
