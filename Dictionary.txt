@@ -210,7 +210,7 @@
 "chest1"
 "lgsafe"
 "LOCKER1"
-"LOCKER2v
+"LOCKER2"
 "LOCKER3"
 "LOCKER4"
 "LOCKER5"

@@ -147,7 +147,7 @@ public class Highligther {
      */
     private Color getItemColor(String extLessFilename) {
         Color result;
-        Obj obj = DICTIONARY.getOrDefault(extLessFilename.toLowerCase(), Obj.UNUSED);
+        Obj obj = DICTIONARY.getOrDefault(extLessFilename, Obj.UNUSED);
         switch (obj) {
             case IMPLANTS:
                 result = config.getImplantColor();
@@ -265,7 +265,7 @@ public class Highligther {
         int w = (int) Math.round(strBounds.getWidth());
         int h = (int) Math.round(strBounds.getHeight());
 
-        BufferedImage result = new BufferedImage(Math.max(w, img.getWidth()) + 2, 2 * (h + 2) + img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage result = new BufferedImage(Math.max(w, img.getWidth()) + 2, 2 * h + img.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D resG2D = result.createGraphics();
 
         resG2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
@@ -285,11 +285,11 @@ public class Highligther {
         }
         resG2D.setColor(color);
         resG2D.setFont(font);
-        resG2D.translate(0, -strBounds.getY());
+        resG2D.translate(0, -Math.round(strBounds.getY()));
         resG2D.drawString(label, 2, 2);
-        resG2D.drawLine(w / 2 - 1, h / 2 - 1, w / 2 - 1, 2 * (h + 2) - 1);
-
-        resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - img.getHeight()) / 2, null);
+        resG2D.drawLine(w / 2 - 1, h / 2 - 1, w / 2 - 1, 2 * h - 1);
+        resG2D.translate(0, h / 2);
+        resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - img.getHeight()) / 2 - h / 4, null);
 
         return result;
     }
@@ -340,6 +340,7 @@ public class Highligther {
                         final BufferedImage[] imgDst = new BufferedImage[frames.size()];
                         final int[] frameOffsetsX = new int[frames.size()];
                         final int[] frameOffsetsY = new int[frames.size()];
+
                         for (int i = 0; i < frames.size(); i++) {
                             imgSrc[i] = frames.get(i).toBufferedImage();
                             imgDst[i] = new BufferedImage(imgSrc[i].getWidth() + 2, imgSrc[i].getHeight() + 2, BufferedImage.TYPE_INT_ARGB);
@@ -361,7 +362,8 @@ public class Highligther {
 
                             // label
                             Obj obj = DICTIONARY.get(extLessFilename);
-                            if (config.isPutLabels() && obj != null && obj.isLabeled()) {
+                            boolean labeled = config.isPutLabels() && obj != null && obj.isLabeled();
+                            if (labeled) {
                                 imgDst[i] = putLabel(imgDst[i], myFont, MAPPED_BY.getOrDefault(extLessFilename, extLessFilename), getItemColor(extLessFilename), true);
                             }
 

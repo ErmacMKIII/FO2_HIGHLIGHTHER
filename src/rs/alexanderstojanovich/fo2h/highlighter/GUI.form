@@ -440,7 +440,7 @@
               <Image iconType="3" name="/rs/alexanderstojanovich/fo2h/res/stop.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="STOP"/>
-            <Property name="toolTipText" type="java.lang.String" value="Interrupts higlighter"/>
+            <Property name="toolTipText" type="java.lang.String" value="Stops higlighter abruptly"/>
             <Property name="enabled" type="boolean" value="false"/>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[70, 35]"/>

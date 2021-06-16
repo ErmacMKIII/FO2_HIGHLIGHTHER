@@ -438,7 +438,7 @@ public class GUI extends javax.swing.JFrame {
         btnStop.setForeground(new java.awt.Color(204, 0, 51));
         btnStop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/stop.png"))); // NOI18N
         btnStop.setText("STOP");
-        btnStop.setToolTipText("Interrupts higlighter");
+        btnStop.setToolTipText("Stops higlighter abruptly");
         btnStop.setEnabled(false);
         btnStop.setPreferredSize(new java.awt.Dimension(70, 35));
         btnStop.addActionListener(new java.awt.event.ActionListener() {
@@ -628,12 +628,13 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION V1.4 - JAPANESE (PUBLIC BUILD reviewed on 2021-06-15 at 22:15).</b></html>\n");
+            sb.append("<html><b>VERSION V1.4 - JAPANESE (PUBLIC BUILD reviewed on 2021-06-16 at 21:15).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
             sb.append("Changelog for V1.4 JAPPANESE:\n");
             sb.append("\t- Feature to put labels for the items.\n");
+            sb.append("\t- Fixes for Dictionary & Item Colors.\n");
             sb.append("\n");
             sb.append("Changelog for V1.3 IKAROS:\n");
             sb.append("\t- Fixed FRM read/write again and so the consequent game crashes.\n");
