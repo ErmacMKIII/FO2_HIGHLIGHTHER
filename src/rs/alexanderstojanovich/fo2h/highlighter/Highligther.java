@@ -35,13 +35,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingWorker;
-import javax.swing.border.BevelBorder;
 import rs.alexanderstojanovich.fo2h.frm.FRM;
 import rs.alexanderstojanovich.fo2h.frm.ImageData;
-import rs.alexanderstojanovich.fo2h.frm.Palette;
 import rs.alexanderstojanovich.fo2h.util.ColorSample;
 import rs.alexanderstojanovich.fo2h.util.FO2HLogger;
 
@@ -223,13 +219,14 @@ public class Highligther extends SwingWorker<Void, Void> {
     }
 
     /**
+     * Puts label (a sign) bound to the image.
      *
      * @param img parsed image to put a label on
      * @param font parsed font
      * @param label draw string
      * @param color string color
      * @param fillInterior fill interior option
-     * @return
+     * @return result image with label
      */
     public static final BufferedImage putLabel(BufferedImage img, Font font, String label, Color color, boolean fillInterior) {
         FontRenderContext frc = new FontRenderContext(null, true, true);
@@ -259,7 +256,7 @@ public class Highligther extends SwingWorker<Void, Void> {
         resG2D.setFont(font);
         resG2D.translate(0, -Math.round(strBounds.getY()));
         resG2D.drawString(label, 2, 2);
-        resG2D.drawLine(w / 2 - 1, h / 2 - 1, w / 2 - 1, 2 * h - 1);
+        resG2D.drawLine(w / 2, h / 2 - 1, w / 2, 2 * h - 1);
         resG2D.translate(0, h / 2);
         resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - img.getHeight()) / 2 - h / 4, null);
 
