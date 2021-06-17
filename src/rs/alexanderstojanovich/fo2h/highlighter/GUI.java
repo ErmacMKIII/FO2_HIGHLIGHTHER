@@ -21,16 +21,19 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.border.BevelBorder;
 import rs.alexanderstojanovich.fo2h.frm.Palette;
 import rs.alexanderstojanovich.fo2h.util.FO2HLogger;
 
@@ -50,19 +53,44 @@ public class GUI extends javax.swing.JFrame {
     public static final String RESOURCES_DIR = "/rs/alexanderstojanovich/fo2h/res/";
     public static final String LICENSE_LOGO_FILE_NAME = "gplv3_logo.png";
 
-    private final Highligther highligther;
+    private Highligther task;
+
+    // via several labels coloured differently
+    private final JLabel[] colorVector = new JLabel[256];
 
     /**
      * Creates new form GUI
      */
     public GUI() {
         initComponents();
-        this.highligther = new Highligther(cfg, pnlPalette);
         initFO2HLogos();
         initColors(); // init item colors
         initPaths(); // init dir paths
         initMeths(); // init draw methods
         initPosition();
+        initColorPanel();
+    }
+
+    // init Palette display (it's called Color Vector)
+    private void initColorPanel() {
+        int[] colors = Palette.getColors();
+        if (colors != null) {
+            for (int i = 0; i < colorVector.length; i++) {
+                colorVector[i] = new JLabel();
+                colorVector[i].setBackground(Color.BLACK);
+                colorVector[i].setOpaque(true);
+                colorVector[i].setSize(9, 9);
+                colorVector[i].setBorder(new BevelBorder(BevelBorder.RAISED));
+
+                Color col = new Color(Palette.getColors()[i]);
+
+                colorVector[i].setBackground(col);
+                colorVector[i].setToolTipText("Red = " + col.getRed()
+                        + ", Green = " + col.getGreen() + ", Blue = " + col.getBlue());
+
+                pnlPalette.add(colorVector[i], new Integer(i));
+            }
+        }
     }
 
     private void initPaths() {
@@ -250,7 +278,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().add(pnlFilePaths);
 
         pnlPalette.setBorder(javax.swing.BorderFactory.createTitledBorder("Palette"));
-        pnlPalette.setLayout(new java.awt.GridLayout(16, 16, 1, 1));
+        pnlPalette.setLayout(new java.awt.GridLayout(16, 16, 2, 2));
         getContentPane().add(pnlPalette);
 
         pnlOutlineColors.setBorder(javax.swing.BorderFactory.createTitledBorder("Item Colors"));
@@ -508,33 +536,29 @@ public class GUI extends javax.swing.JFrame {
             return;
         }
         btnGo.setEnabled(false);
-        final Timer timer = new Timer();
-        TimerTask timerTask = new TimerTask() {
+        btnStop.setEnabled(true);
+        task = new Highligther(cfg) {
             @Override
-            public void run() {
-                while (highligther.getProgress() < 100.0f && !highligther.isStopped()) {
-                    progBarWork.setValue(Math.round(highligther.getProgress()));
-                    progBarWork.validate();
-                }
-            }
-        };
-        timer.schedule(timerTask, 0L);
-        Thread workThread = new Thread("Work Thread") {
-            @Override
-            public void run() {
-                btnStop.setEnabled(true);
-                highligther.work();
-                progBarWork.setValue(Math.round(highligther.getProgress()));
-                progBarWork.validate();
-                JOptionPane.showMessageDialog(GUI.this, highligther.isStopped() ? "Highlighter work stopped!" : "Highlighter work successfully finished!", "Work Finished", JOptionPane.INFORMATION_MESSAGE);
-                highligther.resetProgress();
-                progBarWork.setValue(0);
-                timer.cancel();
+            protected void done() {
+                boolean stopped = isStopped();
+                JOptionPane.showMessageDialog(GUI.this, stopped ? "Highlighter work stopped by the user!" : "Highlighter work successfully finished!", "Work Finished", stopped ? JOptionPane.WARNING_MESSAGE : JOptionPane.INFORMATION_MESSAGE);
                 btnGo.setEnabled(true);
                 btnStop.setEnabled(false);
             }
+
         };
-        workThread.start();
+
+        task.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if ("progress".equals(evt.getPropertyName())) {
+                    progBarWork.setValue(Math.round((float) evt.getNewValue()));
+                    progBarWork.validate();
+                }
+            }
+        });
+
+        task.execute();
     }//GEN-LAST:event_btnGoActionPerformed
 
     private void btnImplantColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImplantColorActionPerformed
@@ -628,7 +652,7 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION V1.4 - JAPANESE (PUBLIC BUILD reviewed on 2021-06-16 at 21:15).</b></html>\n");
+            sb.append("<html><b>VERSION V1.4 - JAPANESE (PUBLIC BUILD reviewed on 2021-06-17 at 15:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
@@ -731,7 +755,9 @@ public class GUI extends javax.swing.JFrame {
 
     private void btnStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopActionPerformed
         // TODO add your handling code here:
-        highligther.setStopped(true);
+        if (task != null) {
+            task.setStopped(true);
+        }
     }//GEN-LAST:event_btnStopActionPerformed
 
     /**

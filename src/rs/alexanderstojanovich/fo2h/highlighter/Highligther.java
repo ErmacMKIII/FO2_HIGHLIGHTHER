@@ -37,6 +37,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import rs.alexanderstojanovich.fo2h.frm.FRM;
 import rs.alexanderstojanovich.fo2h.frm.ImageData;
@@ -48,7 +49,7 @@ import rs.alexanderstojanovich.fo2h.util.FO2HLogger;
  *
  * @author Alexander Stojanovich <coas91@rocketmail.com>
  */
-public class Highligther {
+public class Highligther extends SwingWorker<Void, Void> {
 
     private static final float LUMA_RED_COEFF = 0.2126f;
     private static final float LUMA_GREEN_COEFF = 0.7152f;
@@ -56,7 +57,6 @@ public class Highligther {
 
     private static final String TEXTFILE = "Dictionary.txt";
 
-    private float progress = 0.0f;
     private final Configuration config;
 
     private final Font myFont;
@@ -64,17 +64,11 @@ public class Highligther {
     public static final Map<String, Obj> DICTIONARY = new HashMap<>();
     public static final Map<String, String> MAPPED_BY = new HashMap<>();
 
-    private final JPanel colorPanel;
-    // via several labels coloured differently
-    private final JLabel[] colorVector = new JLabel[256];
-
     private boolean stopped = false;
 
-    public Highligther(Configuration config, JPanel colorPanel) {
+    public Highligther(Configuration config) {
         this.config = config;
-        this.colorPanel = colorPanel;
         this.myFont = new Font(config.getFontName(), config.getFontStyle(), config.getFontSize());
-        initColorPanel();
     }
 
     public static void initDictionary() {
@@ -114,28 +108,6 @@ public class Highligther {
         }
 
         FO2HLogger.reportInfo("Dictionary initialized!", null);
-    }
-
-    // init Palette display (it's called Color Vector)
-    private void initColorPanel() {
-        int[] colors = Palette.getColors();
-        if (colors != null) {
-            for (int i = 0; i < colorVector.length; i++) {
-                colorVector[i] = new JLabel();
-                colorVector[i].setBackground(Color.BLACK);
-                colorVector[i].setOpaque(true);
-                colorVector[i].setSize(9, 9);
-                colorVector[i].setBorder(new BevelBorder(BevelBorder.RAISED));
-
-                Color col = new Color(Palette.getColors()[i]);
-
-                colorVector[i].setBackground(col);
-                colorVector[i].setToolTipText("Red = " + col.getRed()
-                        + ", Green = " + col.getGreen() + ", Blue = " + col.getBlue());
-
-                colorPanel.add(colorVector[i], new Integer(i));
-            }
-        }
     }
 
     /**
@@ -299,9 +271,11 @@ public class Highligther {
      *
      */
     public void work() {
+        float oldProgress = 0.0f, progress = 0.0f;
         progress = 0.0f;
         if (!config.getInDir().exists()) {
             progress = 100.0f;
+            firePropertyChange("progress", oldProgress, progress);
             return;
         }
 
@@ -364,7 +338,7 @@ public class Highligther {
                             Obj obj = DICTIONARY.get(extLessFilename);
                             boolean labeled = config.isPutLabels() && obj != null && obj.isLabeled();
                             if (labeled) {
-                                imgDst[i] = putLabel(imgDst[i], myFont, MAPPED_BY.getOrDefault(extLessFilename, extLessFilename), getItemColor(extLessFilename), true);
+                                imgDst[i] = putLabel(imgDst[i], myFont, MAPPED_BY.getOrDefault(extLessFilename, extLessFilename), getItemColor(extLessFilename), config.isFillInterior());
                             }
 
                             frameOffsetsX[i] = frames.get(i).getOffsetX();
@@ -412,7 +386,7 @@ public class Highligther {
                             // label
                             Obj obj = DICTIONARY.get(extLessFilename);
                             if (config.isPutLabels() && obj != null && obj.isLabeled()) {
-                                imgDst = putLabel(imgDst, myFont, MAPPED_BY.getOrDefault(extLessFilename, extLessFilename), getItemColor(extLessFilename), true);
+                                imgDst = putLabel(imgDst, myFont, MAPPED_BY.getOrDefault(extLessFilename, extLessFilename), getItemColor(extLessFilename), config.isFillInterior());
                             }
 
                             //--------------------------------------------------
@@ -427,19 +401,19 @@ public class Highligther {
                     }
                 }
                 progress += 100.0f / fileArray.length;
+                firePropertyChange("progress", oldProgress, progress);
             }
         }
 
         FO2HLogger.reportInfo("Highlighter work finished!", null);
         progress = 100.0f;
+        firePropertyChange("progress", oldProgress, progress);
     }
 
-    public void resetProgress() {
-        progress = 0.0f;
-    }
-
-    public float getProgress() {
-        return progress;
+    @Override
+    protected Void doInBackground() throws Exception {
+        work();
+        return null;
     }
 
     public boolean isStopped() {
