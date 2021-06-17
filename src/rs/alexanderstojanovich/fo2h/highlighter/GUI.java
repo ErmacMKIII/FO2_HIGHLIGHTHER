@@ -31,7 +31,6 @@ import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import rs.alexanderstojanovich.fo2h.frm.Palette;
@@ -544,6 +543,8 @@ public class GUI extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(GUI.this, stopped ? "Highlighter work stopped by the user!" : "Highlighter work successfully finished!", "Work Finished", stopped ? JOptionPane.WARNING_MESSAGE : JOptionPane.INFORMATION_MESSAGE);
                 btnGo.setEnabled(true);
                 btnStop.setEnabled(false);
+                progBarWork.setValue(0);
+                progBarWork.validate();
             }
 
         };
