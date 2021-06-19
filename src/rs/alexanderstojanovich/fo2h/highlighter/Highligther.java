@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -29,7 +30,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
@@ -232,9 +232,10 @@ public class Highligther extends SwingWorker<Void, Void> {
     public static final BufferedImage putLabel(BufferedImage img, Font font, String label, Color color, boolean fillInterior) {
         FontRenderContext frc = new FontRenderContext(null, true, true);
 
-        Rectangle2D strBounds = font.getStringBounds(label, frc);
-        int w = (int) Math.round(strBounds.getWidth());
-        int h = (int) Math.round(strBounds.getHeight());
+        GlyphVector glyphVec = font.createGlyphVector(frc, label);
+        Rectangle2D bounds = glyphVec.getLogicalBounds();
+        int w = (int) Math.round(bounds.getWidth());
+        int h = (int) Math.round(bounds.getHeight());
 
         BufferedImage result = new BufferedImage(Math.max(w, img.getWidth()) + 2, 2 * h + img.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D resG2D = result.createGraphics();
@@ -257,8 +258,8 @@ public class Highligther extends SwingWorker<Void, Void> {
         }
         resG2D.setColor(color);
         resG2D.setFont(font);
-        resG2D.translate(0, -Math.round(strBounds.getY()));
-        resG2D.drawString(new String(label.getBytes(StandardCharsets.UTF_8)), 2, 2);
+        resG2D.translate(0, -Math.round(bounds.getY()));
+        resG2D.drawGlyphVector(glyphVec, 2.0f, 2.0f);
         resG2D.drawLine(w / 2, h / 2 - 1, w / 2, 2 * h - 1);
         resG2D.translate(0, h / 2);
         resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - img.getHeight()) / 2 - h / 4, null);
