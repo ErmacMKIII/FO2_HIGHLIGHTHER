@@ -653,11 +653,11 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION V1.4 - JAPANESE (PUBLIC BUILD reviewed on 2021-06-17 at 15:00).</b></html>\n");
+            sb.append("<html><b>VERSION V1.4 - JAPANESE (PUBLIC BUILD reviewed on 2021-06-19 at 19:15).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
-            sb.append("Changelog for V1.4 JAPPANESE:\n");
+            sb.append("Changelog for V1.4 JAPANESE:\n");
             sb.append("\t- Feature to put labels for the items.\n");
             sb.append("\t- Fixes for Dictionary & Item Colors.\n");
             sb.append("\n");

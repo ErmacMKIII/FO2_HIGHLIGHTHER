@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -230,7 +231,9 @@ public class Highligther extends SwingWorker<Void, Void> {
      */
     public static final BufferedImage putLabel(BufferedImage img, Font font, String label, Color color, boolean fillInterior) {
         FontRenderContext frc = new FontRenderContext(null, true, true);
-        Rectangle2D strBounds = font.getStringBounds(label, frc);
+
+        GlyphVector glyphVec = font.createGlyphVector(frc, label);
+        Rectangle2D strBounds = glyphVec.getLogicalBounds();
         int w = (int) Math.round(strBounds.getWidth());
         int h = (int) Math.round(strBounds.getHeight());
 
@@ -240,6 +243,7 @@ public class Highligther extends SwingWorker<Void, Void> {
         resG2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
         resG2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         resG2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        resG2D.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         resG2D.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
         resG2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         resG2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
@@ -255,7 +259,7 @@ public class Highligther extends SwingWorker<Void, Void> {
         resG2D.setColor(color);
         resG2D.setFont(font);
         resG2D.translate(0, -Math.round(strBounds.getY()));
-        resG2D.drawString(label, 2, 2);
+        resG2D.drawGlyphVector(glyphVec, 1.5f, 1.5f);
         resG2D.drawLine(w / 2, h / 2 - 1, w / 2, 2 * h - 1);
         resG2D.translate(0, h / 2);
         resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - img.getHeight()) / 2 - h / 4, null);
@@ -282,9 +286,10 @@ public class Highligther extends SwingWorker<Void, Void> {
 
         stopped = false;
 
+        FO2HLogger.reportInfo("Starting Higlighter work", null);
         if (config.getInDir().isDirectory()) {
             File[] fileArray = config.getInDir().listFiles();
-            FO2HLogger.reportInfo("Detected " + fileArray.length + " files..", null);
+            FO2HLogger.reportInfo("Processing " + fileArray.length + " files..", null);
             for (File srcFile : fileArray) {
                 if (stopped) {
                     FO2HLogger.reportInfo("Highlighter stopped!", null);
