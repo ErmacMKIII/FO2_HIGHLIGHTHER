@@ -358,6 +358,11 @@ public class Highligther extends SwingWorker<Void, Void> {
                                 frameOffsetsY
                         );
                         File outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
+
+                        if (outFile.exists()) {
+                            outFile.delete();
+                        }
+
                         dstFRM.write(outFile);
                     } else if (srcFile.getName().toLowerCase().endsWith(".png")) {
                         BufferedImage imgSrc = null;
@@ -392,6 +397,10 @@ public class Highligther extends SwingWorker<Void, Void> {
 
                             //--------------------------------------------------
                             File outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".png"));
+
+                            if (outFile.exists()) {
+                                outFile.delete();
+                            }
 
                             try {
                                 ImageIO.write(imgDst, "png", outFile);
