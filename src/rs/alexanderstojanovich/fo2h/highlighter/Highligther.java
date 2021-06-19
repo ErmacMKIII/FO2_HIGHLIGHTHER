@@ -21,15 +21,16 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
@@ -71,7 +72,9 @@ public class Highligther extends SwingWorker<Void, Void> {
     public static void initDictionary() {
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader(TEXTFILE));
+            FileInputStream fis = new FileInputStream(TEXTFILE);
+            InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            br = new BufferedReader(isr);
             String line;
             Obj obj = null;
             boolean labeled = false;
@@ -232,8 +235,7 @@ public class Highligther extends SwingWorker<Void, Void> {
     public static final BufferedImage putLabel(BufferedImage img, Font font, String label, Color color, boolean fillInterior) {
         FontRenderContext frc = new FontRenderContext(null, true, true);
 
-        GlyphVector glyphVec = font.createGlyphVector(frc, label);
-        Rectangle2D bounds = glyphVec.getLogicalBounds();
+        Rectangle2D bounds = font.getStringBounds(label, frc);
         int w = (int) Math.round(bounds.getWidth());
         int h = (int) Math.round(bounds.getHeight());
 
@@ -259,7 +261,7 @@ public class Highligther extends SwingWorker<Void, Void> {
         resG2D.setColor(color);
         resG2D.setFont(font);
         resG2D.translate(0, -Math.round(bounds.getY()));
-        resG2D.drawGlyphVector(glyphVec, 2.0f, 2.0f);
+        resG2D.drawString(new String(label.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8), 2.0f, 2.0f);
         resG2D.drawLine(w / 2, h / 2 - 1, w / 2, 2 * h - 1);
         resG2D.translate(0, h / 2);
         resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - img.getHeight()) / 2 - h / 4, null);

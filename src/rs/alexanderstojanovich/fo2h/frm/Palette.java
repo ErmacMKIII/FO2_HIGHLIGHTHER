@@ -71,6 +71,7 @@ public class Palette {
                 index++;
             }
             loaded = true;
+            FO2HLogger.reportInfo("Palette Initialized!", null);
         }
     }
 
