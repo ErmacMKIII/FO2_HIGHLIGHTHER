@@ -81,8 +81,61 @@ public class Highligther extends SwingWorker<Void, Void> {
             while ((line = br.readLine()) != null) {
                 if (line.trim().equals("@LABELED")) {
                     labeled = true;
-                } else if (line.startsWith("@") && !line.startsWith("@LABELED")) {
-                    obj = Obj.valueOf(line.trim().substring(1));
+                } else if (line.startsWith("@") && !line.startsWith("@LABELED") && !line.startsWith("@CUSTOM")) {
+                    obj = PredefObj.valueOf(line.trim().substring(1));
+                    obj.setLabeled(labeled);
+                    labeled = false;
+                } else if (line.startsWith("@CUSTOM")) {
+                    String[] items = line.trim().split("\\s+");
+                    Color col = new Color(Integer.parseInt(items[1]), Integer.parseInt(items[2]), Integer.parseInt(items[3]));
+                    obj = new CustomObj(col);
+                    obj.setLabeled(labeled);
+                    labeled = false;
+                } else if (obj != null) {
+                    String[] things = line.trim().replaceAll("\"", "").split("=>", -1);
+                    DICTIONARY.put(things[0].trim(), obj);
+                    if (obj.isLabeled() && things.length == 2) {
+                        MAPPED_BY.put(things[0].trim(), things[1].trim());
+                    }
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            FO2HLogger.reportError(ex.getMessage(), ex);
+        } catch (IOException ex) {
+            FO2HLogger.reportError(ex.getMessage(), ex);
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException ex) {
+                    FO2HLogger.reportError(ex.getMessage(), ex);
+                }
+            }
+        }
+
+        FO2HLogger.reportInfo("Dictionary initialized!", null);
+    }
+
+    public static void initDictionary(File dictionary) {
+        BufferedReader br = null;
+        try {
+            FileInputStream fis = new FileInputStream(dictionary);
+            InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            br = new BufferedReader(isr);
+            String line;
+            Obj obj = null;
+            boolean labeled = false;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().equals("@LABELED")) {
+                    labeled = true;
+                } else if (line.startsWith("@") && !line.startsWith("@LABELED") && !line.startsWith("@CUSTOM")) {
+                    obj = PredefObj.valueOf(line.trim().substring(1));
+                    obj.setLabeled(labeled);
+                    labeled = false;
+                } else if (line.startsWith("@CUSTOM")) {
+                    String[] items = line.trim().split("\\s+");
+                    Color col = new Color(Integer.parseInt(items[1]), Integer.parseInt(items[2]), Integer.parseInt(items[3]));
+                    obj = new CustomObj(col);
                     obj.setLabeled(labeled);
                     labeled = false;
                 } else if (obj != null) {
@@ -118,60 +171,8 @@ public class Highligther extends SwingWorker<Void, Void> {
      * @return item color
      */
     private Color getItemColor(String extLessFilename) {
-        Color result;
-        Obj obj = DICTIONARY.getOrDefault(extLessFilename, Obj.UNUSED);
-        switch (obj) {
-            case IMPLANTS:
-                result = config.getImplantColor();
-                break;
-            case T4_WEAPONS:
-            case T4_ARMORS:
-            case T4_AMMO:
-            case T4_ITEMS:
-                result = config.getT4Color();
-                break;
-            case T3_WEAPONS:
-            case T3_ARMORS:
-            case T3_AMMO:
-            case T3_ITEMS:
-                result = config.getT3Color();
-                break;
-            case T2_WEAPONS:
-            case T2_ARMORS:
-            case T2_AMMO:
-            case T2_ITEMS:
-                result = config.getT2Color();
-                break;
-            case T1_WEAPONS:
-            case T1_ARMORS:
-            case T1_AMMO:
-            case T1_ITEMS:
-                result = config.getT1Color();
-                break;
-            case T0_WEAPONS:
-            case T0_ARMORS:
-            case T0_AMMO:
-            case T0_ITEMS:
-                result = config.getT0Color();
-                break;
-            case BOOKS:
-                result = config.getBookColor();
-                break;
-            case ORES:
-                result = config.getOreColor();
-                break;
-            case RESOURCES:
-                result = config.getResourcesColor();
-                break;
-            case CONTAINERS:
-                result = config.getContainerColor();
-                break;
-            case UNUSED:
-            default:
-                result = config.getUnusedColor();
-                break;
-        }
-        return result;
+        Obj obj = DICTIONARY.getOrDefault(extLessFilename, PredefObj.UNUSED);
+        return obj.getColor(config);
     }
 
     /**
@@ -276,6 +277,12 @@ public class Highligther extends SwingWorker<Void, Void> {
     public void work() {
         float oldProgress = 0.0f, progress = 0.0f;
         progress = 0.0f;
+        if (DICTIONARY.isEmpty()) {
+            progress = 100.0f;
+            firePropertyChange("progress", oldProgress, progress);
+            return;
+        }
+
         if (!config.getInDir().exists()) {
             progress = 100.0f;
             firePropertyChange("progress", oldProgress, progress);

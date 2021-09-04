@@ -33,6 +33,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import rs.alexanderstojanovich.fo2h.frm.Palette;
 import rs.alexanderstojanovich.fo2h.util.FO2HLogger;
 
@@ -101,6 +103,8 @@ public class GUI extends javax.swing.JFrame {
                 && !cfg.getOutDir().getPath().isEmpty()) {
             btnGo.setEnabled(true);
         }
+        final FileNameExtensionFilter dictiFilter = new FileNameExtensionFilter("Highlighter dictionary (*.txt)", "txt");
+        this.fileLoadDictionary.setFileFilter(dictiFilter);
     }
 
     // Center the GUI window into center of the screen
@@ -133,6 +137,7 @@ public class GUI extends javax.swing.JFrame {
         this.btnBookColor.setBackground(cfg.getBookColor());
         this.btnOreColor.setBackground(cfg.getOreColor());
         this.btnContainerColor.setBackground(cfg.getContainerColor());
+        this.btnCollectionColor.setBackground(cfg.getCollectionColor());
         this.btnResourceColor.setBackground(cfg.getResourcesColor());
         this.btnUnusedColor.setBackground(cfg.getUnusedColor());
     }
@@ -178,6 +183,7 @@ public class GUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        fileLoadDictionary = new javax.swing.JFileChooser();
         fileChooserInput = new javax.swing.JFileChooser();
         fileChooserOutput = new javax.swing.JFileChooser();
         pnlFilePaths = new javax.swing.JPanel();
@@ -209,6 +215,8 @@ public class GUI extends javax.swing.JFrame {
         btnResourceColor = new javax.swing.JButton();
         lblContainerColor = new javax.swing.JLabel();
         btnContainerColor = new javax.swing.JButton();
+        lblCollectionColor = new javax.swing.JLabel();
+        btnCollectionColor = new javax.swing.JButton();
         lblUnusedColor = new javax.swing.JLabel();
         btnUnusedColor = new javax.swing.JButton();
         pnlWork = new javax.swing.JPanel();
@@ -220,6 +228,7 @@ public class GUI extends javax.swing.JFrame {
         btnStop = new javax.swing.JButton();
         mainMenu = new javax.swing.JMenuBar();
         mainMenuFile = new javax.swing.JMenu();
+        fileMenuLoadDictionary = new javax.swing.JMenuItem();
         fileMenuExit = new javax.swing.JMenuItem();
         mainMenuInfo = new javax.swing.JMenu();
         infoMenuAbout = new javax.swing.JMenuItem();
@@ -231,9 +240,8 @@ public class GUI extends javax.swing.JFrame {
         fileChooserOutput.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("FOnline2 Highlighter - JAPANESE");
+        setTitle("FOnline2 Highlighter - KOREANS");
         setMinimumSize(new java.awt.Dimension(420, 600));
-        setPreferredSize(new java.awt.Dimension(420, 600));
         setResizable(false);
         setSize(new java.awt.Dimension(480, 600));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
@@ -281,7 +289,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().add(pnlPalette);
 
         pnlOutlineColors.setBorder(javax.swing.BorderFactory.createTitledBorder("Item Colors"));
-        pnlOutlineColors.setLayout(new java.awt.GridLayout(11, 2, 2, 2));
+        pnlOutlineColors.setLayout(new java.awt.GridLayout(12, 2, 2, 2));
 
         lblImplantColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblImplantColor.setText("Implant Color:");
@@ -403,6 +411,19 @@ public class GUI extends javax.swing.JFrame {
         });
         pnlOutlineColors.add(btnContainerColor);
 
+        lblCollectionColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        lblCollectionColor.setText("Collection Color:");
+        lblCollectionColor.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        pnlOutlineColors.add(lblCollectionColor);
+
+        btnCollectionColor.setBorder(null);
+        btnCollectionColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCollectionColorActionPerformed(evt);
+            }
+        });
+        pnlOutlineColors.add(btnCollectionColor);
+
         lblUnusedColor.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         lblUnusedColor.setText("Unused Color:");
         pnlOutlineColors.add(lblUnusedColor);
@@ -479,6 +500,14 @@ public class GUI extends javax.swing.JFrame {
 
         mainMenuFile.setText("File");
 
+        fileMenuLoadDictionary.setText("Load Dictionary...");
+        fileMenuLoadDictionary.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileMenuLoadDictionaryActionPerformed(evt);
+            }
+        });
+        mainMenuFile.add(fileMenuLoadDictionary);
+
         fileMenuExit.setText("Exit");
         fileMenuExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -525,7 +554,11 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnChoosePathOutActionPerformed
 
     private void btnGoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGoActionPerformed
-        // TODO add your handling code here:                                
+        // TODO add your handling code here:  
+        if (Highligther.DICTIONARY.isEmpty()) {
+            JOptionPane.showMessageDialog(GUI.this, "Dictionary must be initialized!", "Dictionary requirement error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         if (!cfg.getInDir().exists()) {
             JOptionPane.showMessageDialog(GUI.this, "Input directory doesn't exist!", "Input directory error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -653,9 +686,14 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION V1.4 - JAPANESE (PUBLIC BUILD reviewed on 2021-06-20 at 00:00).</b></html>\n");
+            sb.append("<html><b>VERSION V1.5 - KOREANS (PUBLIC BUILD reviewed on 2021-09-05 at 00:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
+            sb.append("\n");
+            sb.append("Changelog for V1.5 KOREANS:\n");
+            sb.append("\t- Feature to make custom item group.\n");
+            sb.append("\t- Added Collection items item group.\n");
+            sb.append("\t- Load dictionary from the menus.\n");
             sb.append("\n");
             sb.append("Changelog for V1.4 JAPANESE:\n");
             sb.append("\t- Feature to put labels for the items.\n");
@@ -725,6 +763,9 @@ public class GUI extends javax.swing.JFrame {
             sb.append("\n");
             sb.append("\t[Tip] For best results make sure that chosen colors are colors from the palette.\n");
             sb.append("\n");
+            sb.append("\t[Tip] Dictionary can be shared with other players.\n");
+            sb.append("\tShow them how it's made!");
+            sb.append("\n");
             ImageIcon icon = new ImageIcon(icon_url);
             JOptionPane.showMessageDialog(this, sb.toString(), "How to use", JOptionPane.INFORMATION_MESSAGE, icon);
         }
@@ -761,6 +802,24 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnStopActionPerformed
 
+    private void btnCollectionColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCollectionColorActionPerformed
+        // TODO add your handling code here:
+        Color color = JColorChooser.showDialog(this, "Choose Collection Color", GUI.cfg.getCollectionColor());
+        if (color != null) {
+            GUI.cfg.setCollectionColor(color);
+            this.btnCollectionColor.setBackground(color);
+        }
+    }//GEN-LAST:event_btnCollectionColorActionPerformed
+
+    private void fileMenuLoadDictionaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuLoadDictionaryActionPerformed
+        // TODO add your handling code here:
+        int returnVal = fileLoadDictionary.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            Highligther.initDictionary(fileLoadDictionary.getSelectedFile());
+            JOptionPane.showMessageDialog(GUI.this, "Dictionary initialized!", "Dictionary", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_fileMenuLoadDictionaryActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -768,7 +827,9 @@ public class GUI extends javax.swing.JFrame {
         FO2HLogger.init(args.length > 0 && args[0].equals("-debug"));
         cfg.readConfigFile();
         Palette.load("Fallout Palette.act");
-        Highligther.initDictionary();
+        if (cfg.isLoadDictionaryOnStart()) {
+            Highligther.initDictionary();
+        }
         try {
             UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
@@ -802,6 +863,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnBookColor;
     private javax.swing.JButton btnChooseInPath;
     private javax.swing.JButton btnChoosePathOut;
+    private javax.swing.JButton btnCollectionColor;
     private javax.swing.JButton btnContainerColor;
     private javax.swing.JButton btnGo;
     private javax.swing.JButton btnImplantColor;
@@ -819,10 +881,13 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JCheckBox cbPutLabels;
     private javax.swing.JFileChooser fileChooserInput;
     private javax.swing.JFileChooser fileChooserOutput;
+    private javax.swing.JFileChooser fileLoadDictionary;
     private javax.swing.JMenuItem fileMenuExit;
+    private javax.swing.JMenuItem fileMenuLoadDictionary;
     private javax.swing.JMenuItem infoMenuAbout;
     private javax.swing.JMenuItem infoMenuHelp;
     private javax.swing.JLabel lblBookColor;
+    private javax.swing.JLabel lblCollectionColor;
     private javax.swing.JLabel lblContainerColor;
     private javax.swing.JLabel lblImplantColor;
     private javax.swing.JLabel lblInput;

@@ -49,6 +49,7 @@ public class Configuration {
     private static final Color DEF_ORE_COLOR = new Color(56, 12, 52);
     private static final Color DEF_RESOURCE_COLOR = new Color(0, 108, 0);
     private static final Color DEF_CONTAINER_COLOR = new Color(220, 108, 0);
+    private static final Color DEF_COLLECTION_ITEMS_COLOR = new Color(88, 48, 8);
 
     private static final Color DEF_UNUSED_COLOR = new Color(252, 176, 176);
 
@@ -63,6 +64,7 @@ public class Configuration {
     private Color resourcesColor = DEF_RESOURCE_COLOR;
     private Color containerColor = DEF_CONTAINER_COLOR;
     private Color unusedColor = DEF_UNUSED_COLOR;
+    private Color collectionColor = DEF_COLLECTION_ITEMS_COLOR;
 
     private File inDir = new File(INPUT_DIR_PATH);
     private File outDir = new File(OUTPUT_DIR_PATH);
@@ -70,6 +72,7 @@ public class Configuration {
     private boolean drawOutline = true;
     private boolean fillInterior = false;
     private boolean putLabels = false;
+    private boolean loadDictionaryOnStart = true;
 
     private String fontName = Font.MONOSPACED;
     private int fontStyle = Font.BOLD;
@@ -139,6 +142,9 @@ public class Configuration {
                             case "ContainerColor":
                                 containerColor = readRGB(words[1]);
                                 break;
+                            case "CollectionColor":
+                                collectionColor = readRGB(words[1]);
+                                break;
                             case "UnusedColor":
                                 unusedColor = readRGB(words[1]);
                                 break;
@@ -159,6 +165,9 @@ public class Configuration {
                                 break;
                             case "FontSize":
                                 fontSize = Integer.parseInt(words[1]);
+                                break;
+                            case "LoadDictionaryOnStart":
+                                loadDictionaryOnStart = Boolean.parseBoolean(words[1]);
                                 break;
                         }
                     }
@@ -204,6 +213,7 @@ public class Configuration {
             pw.println("OreColor = " + writeRGB(oreColor));
             pw.println("ResourceColor = " + writeRGB(resourcesColor));
             pw.println("ContainerColor = " + writeRGB(containerColor));
+            pw.println("CollectionColor = " + writeRGB(collectionColor));
             pw.println();
             pw.println("UnusuedColor = " + writeRGB(unusedColor));
             pw.println();
@@ -214,6 +224,8 @@ public class Configuration {
             pw.println("FontName = " + fontName);
             pw.println("FontStyle = " + fontStyle);
             pw.println("FontSize = " + fontSize);
+            pw.println();
+            pw.println("LoadDictionaryOnStart = " + loadDictionaryOnStart);
         } catch (FileNotFoundException ex) {
             FO2HLogger.reportError(ex.getMessage(), ex);
         } finally {
@@ -235,6 +247,8 @@ public class Configuration {
         oreColor = DEF_ORE_COLOR;
         resourcesColor = DEF_RESOURCE_COLOR;
         containerColor = DEF_CONTAINER_COLOR;
+        collectionColor = DEF_COLLECTION_ITEMS_COLOR;
+
         unusedColor = DEF_UNUSED_COLOR;
 
         putLabels = false;
@@ -333,6 +347,14 @@ public class Configuration {
         this.containerColor = containerColor;
     }
 
+    public Color getCollectionColor() {
+        return collectionColor;
+    }
+
+    public void setCollectionColor(Color collectionColor) {
+        this.collectionColor = collectionColor;
+    }
+
     public Color getUnusedColor() {
         return unusedColor;
     }
@@ -403,6 +425,14 @@ public class Configuration {
 
     public void setFontSize(int fontSize) {
         this.fontSize = fontSize;
+    }
+
+    public boolean isLoadDictionaryOnStart() {
+        return loadDictionaryOnStart;
+    }
+
+    public void setLoadDictionaryOnStart(boolean loadDictionaryOnStart) {
+        this.loadDictionaryOnStart = loadDictionaryOnStart;
     }
 
 }

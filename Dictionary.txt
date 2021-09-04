@@ -206,6 +206,17 @@
 "ironground"
 "mineralground"
 
+@LABELED
+@COLLECTION
+"acard" => "Necropolis Card"
+"passkey1" => "Red Card"
+"passkey2" => "Blue Card"
+"passkey3" => "Yellow Card"
+"BACKPACK" => "TENT / MARIBOMB"
+"holo1" => "Holo / Mission Briefing"
+"kokoweef1" => "Kokoweef script"
+"map1" => "Base Map / Toxic Cave Map"
+
 @CONTAINERS
 "chest1"
 "lgsafe"

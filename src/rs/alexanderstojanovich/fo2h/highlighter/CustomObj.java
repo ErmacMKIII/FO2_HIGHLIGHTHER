@@ -22,28 +22,28 @@ import java.awt.Color;
  *
  * @author Alexander Stojanovich <coas91@rocketmail.com>
  */
-public interface Obj {
+public class CustomObj implements Obj {
 
-    /**
-     * Gets config color (or custom color)
-     *
-     * @param config
-     * @return
-     */
-    public Color getColor(Configuration config);
+    private final Color color;
+    private boolean labeled = false;
 
-    /**
-     * Are item objects marked as labeled (to have label on)
-     *
-     * @return
-     */
-    public boolean isLabeled();
+    public CustomObj(Color color) {
+        this.color = color;
+    }
 
-    /**
-     * Set label for items
-     *
-     * @param labeled
-     */
-    public void setLabeled(boolean labeled);
+    @Override
+    public Color getColor(Configuration config) {
+        return color;
+    }
+
+    @Override
+    public boolean isLabeled() {
+        return labeled;
+    }
+
+    @Override
+    public void setLabeled(boolean labeled) {
+        this.labeled = labeled;
+    }
 
 }
