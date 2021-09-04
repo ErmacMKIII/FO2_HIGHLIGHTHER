@@ -33,7 +33,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import rs.alexanderstojanovich.fo2h.frm.Palette;
 import rs.alexanderstojanovich.fo2h.util.FO2HLogger;
@@ -686,7 +685,7 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION V1.5 - KOREANS (PUBLIC BUILD reviewed on 2021-09-05 at 00:00).</b></html>\n");
+            sb.append("<html><b>VERSION V1.5 - KOREANS (PUBLIC BUILD reviewed on 2021-09-04 at 13:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");
@@ -694,6 +693,7 @@ public class GUI extends javax.swing.JFrame {
             sb.append("\t- Feature to make custom item group.\n");
             sb.append("\t- Added Collection items item group.\n");
             sb.append("\t- Load dictionary from the menus.\n");
+            sb.append("\t- Fixed misaligns when label drawing.\n");
             sb.append("\n");
             sb.append("Changelog for V1.4 JAPANESE:\n");
             sb.append("\t- Feature to put labels for the items.\n");

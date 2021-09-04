@@ -234,13 +234,15 @@ public class Highligther extends SwingWorker<Void, Void> {
      * @return result image with label
      */
     public static final BufferedImage putLabel(BufferedImage img, Font font, String label, Color color, boolean fillInterior) {
+        final int labelHeight = 10;
+
         FontRenderContext frc = new FontRenderContext(null, true, true);
 
         Rectangle2D bounds = font.getStringBounds(label, frc);
-        int w = (int) Math.round(bounds.getWidth());
-        int h = (int) Math.round(bounds.getHeight());
+        int fntWidth = (int) Math.round(bounds.getWidth());
+        int fntHeight = (int) Math.round(bounds.getHeight());
 
-        BufferedImage result = new BufferedImage(Math.max(w, img.getWidth()) + 2, 2 * h + img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage result = new BufferedImage(Math.max(fntWidth, img.getWidth()) + 2, (fntHeight + labelHeight + img.getHeight()) + 2, BufferedImage.TYPE_INT_ARGB);
         Graphics2D resG2D = result.createGraphics();
 
         resG2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
@@ -252,20 +254,20 @@ public class Highligther extends SwingWorker<Void, Void> {
         resG2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
         resG2D.setColor(color);
-        resG2D.drawRoundRect(1, 1, w, h, 1, 1);
+        resG2D.drawRoundRect(1, 1, fntWidth, fntHeight, 2, 2);
         if (fillInterior) {
             float luma = (color.getRed() * LUMA_RED_COEFF + color.getGreen() * LUMA_GREEN_COEFF + color.getBlue() * LUMA_BLUE_COEFF) / 255.0f;
             Color grey = new Color(0.5f * luma, 0.5f * luma, 0.5f * luma, 1.0f);
             resG2D.setColor(grey);
-            resG2D.fillRoundRect(1, 1, w, h, 1, 1);
+            resG2D.fillRoundRect(1, 1, fntWidth, fntHeight, 1, 1);
         }
         resG2D.setColor(color);
         resG2D.setFont(font);
         resG2D.translate(0, -Math.round(bounds.getY()));
         resG2D.drawString(new String(label.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8), 2.0f, 2.0f);
-        resG2D.drawLine(w / 2, h / 2 - 1, w / 2, 2 * h - 1);
-        resG2D.translate(0, h / 2);
-        resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - img.getHeight()) / 2 - h / 4, null);
+        resG2D.drawLine(fntWidth / 2, fntHeight / 2 - 1, fntWidth / 2, 2 * fntHeight - 1);
+        resG2D.translate(0, -img.getHeight() / 2);
+        resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - (fntHeight + labelHeight + img.getHeight()) / 2), null);
 
         return result;
     }
