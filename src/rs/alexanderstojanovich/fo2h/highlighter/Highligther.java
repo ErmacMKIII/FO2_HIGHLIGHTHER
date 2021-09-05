@@ -234,7 +234,7 @@ public class Highligther extends SwingWorker<Void, Void> {
      * @return result image with label
      */
     public static final BufferedImage putLabel(BufferedImage img, Font font, String label, Color color, boolean fillInterior) {
-        final int labelHeight = 10;
+        final int labelHeight = 2 * font.getSize();
 
         FontRenderContext frc = new FontRenderContext(null, true, true);
 
@@ -242,7 +242,7 @@ public class Highligther extends SwingWorker<Void, Void> {
         int fntWidth = (int) Math.round(bounds.getWidth());
         int fntHeight = (int) Math.round(bounds.getHeight());
 
-        BufferedImage result = new BufferedImage(Math.max(fntWidth, img.getWidth()) + 2, (fntHeight + labelHeight + img.getHeight()) + 2, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage result = new BufferedImage(Math.max(fntWidth, img.getWidth()) + 2, (fntHeight + labelHeight + img.getHeight() + 1) + 1, BufferedImage.TYPE_INT_ARGB);
         Graphics2D resG2D = result.createGraphics();
 
         resG2D.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
@@ -263,11 +263,13 @@ public class Highligther extends SwingWorker<Void, Void> {
         }
         resG2D.setColor(color);
         resG2D.setFont(font);
+
         resG2D.translate(0, -Math.round(bounds.getY()));
-        resG2D.drawString(new String(label.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8), 2.0f, 2.0f);
-        resG2D.drawLine(fntWidth / 2, fntHeight / 2 - 1, fntWidth / 2, 2 * fntHeight - 1);
-        resG2D.translate(0, -img.getHeight() / 2);
-        resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, (result.getHeight() - (fntHeight + labelHeight + img.getHeight()) / 2), null);
+        resG2D.drawString(new String(label.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8), 1.0f, 1.0f);
+        resG2D.translate(0, Math.round(bounds.getY()));
+
+        resG2D.drawLine(fntWidth / 2, fntHeight + 1, fntWidth / 2, fntHeight + labelHeight + img.getHeight() / 2 - 1);
+        resG2D.drawImage(img, (result.getWidth() - img.getWidth()) / 2, result.getHeight() - img.getHeight(), null);
 
         return result;
     }

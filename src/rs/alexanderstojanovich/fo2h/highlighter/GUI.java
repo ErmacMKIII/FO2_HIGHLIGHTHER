@@ -685,7 +685,7 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION V1.5 - KOREANS (PUBLIC BUILD reviewed on 2021-09-04 at 13:00).</b></html>\n");
+            sb.append("<html><b>VERSION V1.5 - KOREANS (PUBLIC BUILD reviewed on 2021-09-05 at 12:00).</b></html>\n");
             sb.append("<html><b>This software is free software, </b></html>\n");
             sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
             sb.append("\n");

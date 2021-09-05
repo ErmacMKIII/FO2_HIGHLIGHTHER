@@ -79,7 +79,7 @@ public class Configuration {
     private int fontSize = 12;
 
     private Color readRGB(String str) {
-        String[] split = str.trim().split("^\\(|,|\\)$");
+        String[] split = str.replaceAll("\\s+", "").trim().split("^\\(|,|\\)$");
         int red = Integer.parseInt(split[1]);
         int green = Integer.parseInt(split[2]);
         int blue = Integer.parseInt(split[3]);
@@ -103,9 +103,11 @@ public class Configuration {
                 String line;
                 while ((line = br.readLine()) != null) {
                     // replace all white space chars with empty string
-                    String[] words = line.replaceAll("\\s", "").split("=");
+                    String[] words = line.trim().split("=");
                     if (words.length == 2) {
-                        switch (words[0]) {
+                        words[0] = words[0].trim();
+                        words[1] = words[1].trim();
+                        switch (words[0].trim()) {
                             case "InputDirPath":
                                 inDir = new File(words[1].replaceAll("\"", ""));
                                 break;
@@ -158,7 +160,7 @@ public class Configuration {
                                 putLabels = Boolean.parseBoolean(words[1]);
                                 break;
                             case "FontName":
-                                fontName = words[1];
+                                fontName = words[1].replaceAll("\"", "");
                                 break;
                             case "FontStyle":
                                 fontStyle = Integer.parseInt(words[1]);
@@ -221,7 +223,7 @@ public class Configuration {
             pw.println("FillInterior = " + fillInterior);
             pw.println();
             pw.println("PutLabels = " + putLabels);
-            pw.println("FontName = " + fontName);
+            pw.println("FontName = " + "\"" + fontName + "\"");
             pw.println("FontStyle = " + fontStyle);
             pw.println("FontSize = " + fontSize);
             pw.println();
