@@ -78,6 +78,9 @@ public class Configuration {
     private int fontStyle = Font.BOLD;
     private int fontSize = 12;
 
+    private boolean recursive = false;
+    private boolean forcePaletteColors = false;
+
     private Color readRGB(String str) {
         String[] split = str.replaceAll("\\s+", "").trim().split("^\\(|,|\\)$");
         int red = Integer.parseInt(split[1]);
@@ -171,6 +174,12 @@ public class Configuration {
                             case "LoadDictionaryOnStart":
                                 loadDictionaryOnStart = Boolean.parseBoolean(words[1]);
                                 break;
+                            case "Recursive":
+                                recursive = Boolean.parseBoolean(words[1]);
+                                break;
+                            case "ForcePaletteColors":
+                                forcePaletteColors = Boolean.parseBoolean(words[1]);
+                                break;
                         }
                     }
                 }
@@ -227,6 +236,9 @@ public class Configuration {
             pw.println("FontStyle = " + fontStyle);
             pw.println("FontSize = " + fontSize);
             pw.println();
+            pw.println("Recursive = " + recursive);
+            pw.println("ForcePaletteColors = " + forcePaletteColors);
+            pw.println();
             pw.println("LoadDictionaryOnStart = " + loadDictionaryOnStart);
         } catch (FileNotFoundException ex) {
             FO2HLogger.reportError(ex.getMessage(), ex);
@@ -237,6 +249,7 @@ public class Configuration {
         }
     }
 
+    @Deprecated
     public void reset() {
         // set defaults
         implantColor = DEF_IMPLANT_COLOR;
@@ -435,6 +448,22 @@ public class Configuration {
 
     public void setLoadDictionaryOnStart(boolean loadDictionaryOnStart) {
         this.loadDictionaryOnStart = loadDictionaryOnStart;
+    }
+
+    public boolean isRecursive() {
+        return recursive;
+    }
+
+    public void setRecursive(boolean recursive) {
+        this.recursive = recursive;
+    }
+
+    public boolean isForcePaletteColors() {
+        return forcePaletteColors;
+    }
+
+    public void setForcePaletteColors(boolean forcePaletteColors) {
+        this.forcePaletteColors = forcePaletteColors;
     }
 
 }

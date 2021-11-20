@@ -33,9 +33,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import javax.imageio.ImageIO;
 import javax.swing.SwingWorker;
 import rs.alexanderstojanovich.fo2h.frm.FRM;
@@ -64,13 +66,34 @@ public class Highligther extends SwingWorker<Void, Void> {
 
     private boolean stopped = false;
 
+    private static String dictionaryErrorMessage;
+
     public Highligther(Configuration config) {
         this.config = config;
         this.myFont = new Font(config.getFontName(), config.getFontStyle(), config.getFontSize());
     }
 
-    public static void initDictionary() {
+    /**
+     * Init with default Dictionary
+     *
+     * @return is initialization OK
+     */
+    public static boolean initDictionary() {
+        DICTIONARY.clear();
+        dictionaryErrorMessage = "";
+        StringBuilder sb = new StringBuilder();
+        boolean ok = true;
         BufferedReader br = null;
+        int lineNum = 0;
+
+        final File dictionary = new File(TEXTFILE);
+
+        if (!dictionary.exists()) {
+            FO2HLogger.reportError("File " + dictionary.getAbsolutePath() + " does not exist!", null);
+            dictionaryErrorMessage = "File " + dictionary.getAbsolutePath() + " does not exist!";
+            return false;
+        }
+
         try {
             FileInputStream fis = new FileInputStream(TEXTFILE);
             InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
@@ -79,6 +102,7 @@ public class Highligther extends SwingWorker<Void, Void> {
             Obj obj = null;
             boolean labeled = false;
             while ((line = br.readLine()) != null) {
+                lineNum++;
                 if (line.trim().equals("@LABELED")) {
                     labeled = true;
                 } else if (line.startsWith("@") && !line.startsWith("@LABELED") && !line.startsWith("@CUSTOM")) {
@@ -87,16 +111,34 @@ public class Highligther extends SwingWorker<Void, Void> {
                     labeled = false;
                 } else if (line.startsWith("@CUSTOM")) {
                     String[] items = line.trim().split("\\s+");
-                    Color col = new Color(Integer.parseInt(items[1]), Integer.parseInt(items[2]), Integer.parseInt(items[3]));
-                    obj = new CustomObj(col);
-                    obj.setLabeled(labeled);
+                    if (items.length == 4
+                            && items[0].equals("@CUSTOM")
+                            && items[1].matches("^[0-9]+$")
+                            && items[2].matches("^[0-9]+$")
+                            && items[3].matches("^[0-9]+$")) {
+                        Color col = new Color(Integer.parseInt(items[1]), Integer.parseInt(items[2]), Integer.parseInt(items[3]));
+                        obj = new CustomObj(col);
+                        obj.setLabeled(labeled);
+                    } else {
+                        sb.append("Line ").append(lineNum).append(" : Invalid Color Definition!\n");
+                        FO2HLogger.reportError("Line " + lineNum + " : Invalid Color Definition!", null);
+                        ok = false;
+                    }
                     labeled = false;
                 } else if (obj != null) {
                     String[] things = line.trim().replaceAll("\"", "").split("=>", -1);
                     DICTIONARY.put(things[0].trim(), obj);
                     if (obj.isLabeled() && things.length == 2) {
                         MAPPED_BY.put(things[0].trim(), things[1].trim());
+                    } else if (things.length > 2) {
+                        sb.append("Line ").append(lineNum).append(" : Invalid \"MAPPED BY =>\" Definition!");
+                        FO2HLogger.reportError("Line " + lineNum + " : Invalid \"MAPPED BY =>\" Definition!", null);
+                        ok = false;
                     }
+                } else if (!line.replaceAll("\\s+", "").isEmpty()) {
+                    sb.append("Line ").append(lineNum).append(" : Invalid Definition!");
+                    FO2HLogger.reportError("Line " + lineNum + " : Invalid Definition!", null);
+                    ok = false;
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -113,11 +155,31 @@ public class Highligther extends SwingWorker<Void, Void> {
             }
         }
 
-        FO2HLogger.reportInfo("Dictionary initialized!", null);
+        dictionaryErrorMessage = sb.toString();
+        FO2HLogger.reportInfo("Dictionary initialized " + (ok ? "successfully!" : " with errors!"), null);
+        return ok;
     }
 
-    public static void initDictionary(File dictionary) {
+    /**
+     * Load Dictionary from the file
+     *
+     * @param dictionary file containing Dictionary
+     * @return is load OK
+     */
+    public static boolean loadDictionary(File dictionary) {
+        DICTIONARY.clear();
+        dictionaryErrorMessage = "";
+        StringBuilder sb = new StringBuilder();
+        boolean ok = true;
         BufferedReader br = null;
+        int lineNum = 0;
+
+        if (!dictionary.exists()) {
+            FO2HLogger.reportError("File " + dictionary.getAbsolutePath() + " does not exist!", null);
+            dictionaryErrorMessage = "File " + dictionary.getAbsolutePath() + " does not exist!";
+            return false;
+        }
+
         try {
             FileInputStream fis = new FileInputStream(dictionary);
             InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
@@ -126,6 +188,7 @@ public class Highligther extends SwingWorker<Void, Void> {
             Obj obj = null;
             boolean labeled = false;
             while ((line = br.readLine()) != null) {
+                lineNum++;
                 if (line.trim().equals("@LABELED")) {
                     labeled = true;
                 } else if (line.startsWith("@") && !line.startsWith("@LABELED") && !line.startsWith("@CUSTOM")) {
@@ -134,16 +197,34 @@ public class Highligther extends SwingWorker<Void, Void> {
                     labeled = false;
                 } else if (line.startsWith("@CUSTOM")) {
                     String[] items = line.trim().split("\\s+");
-                    Color col = new Color(Integer.parseInt(items[1]), Integer.parseInt(items[2]), Integer.parseInt(items[3]));
-                    obj = new CustomObj(col);
-                    obj.setLabeled(labeled);
+                    if (items.length == 4
+                            && items[0].equals("@CUSTOM")
+                            && items[1].matches("^[0-9]+$")
+                            && items[2].matches("^[0-9]+$")
+                            && items[3].matches("^[0-9]+$")) {
+                        Color col = new Color(Integer.parseInt(items[1]), Integer.parseInt(items[2]), Integer.parseInt(items[3]));
+                        obj = new CustomObj(col);
+                        obj.setLabeled(labeled);
+                    } else {
+                        sb.append("Line ").append(lineNum).append(" : Invalid Color Definition!\n");
+                        FO2HLogger.reportError("Line " + lineNum + " : Invalid Color Definition!", null);
+                        ok = false;
+                    }
                     labeled = false;
                 } else if (obj != null) {
                     String[] things = line.trim().replaceAll("\"", "").split("=>", -1);
                     DICTIONARY.put(things[0].trim(), obj);
                     if (obj.isLabeled() && things.length == 2) {
                         MAPPED_BY.put(things[0].trim(), things[1].trim());
+                    } else if (things.length > 2) {
+                        sb.append("Line ").append(lineNum).append(" : Invalid \"MAPPED BY =>\" Definition!");
+                        FO2HLogger.reportError("Line " + lineNum + " : Invalid \"MAPPED BY =>\" Definition!", null);
+                        ok = false;
                     }
+                } else if (!line.replaceAll("\\s+", "").isEmpty()) {
+                    sb.append("Line ").append(lineNum).append(" : Invalid Definition!");
+                    FO2HLogger.reportError("Line " + lineNum + " : Invalid Definition!", null);
+                    ok = false;
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -160,7 +241,9 @@ public class Highligther extends SwingWorker<Void, Void> {
             }
         }
 
-        FO2HLogger.reportInfo("Dictionary initialized!", null);
+        dictionaryErrorMessage = sb.toString();
+        FO2HLogger.reportInfo("Dictionary initialized " + (ok ? "successfully!" : " with errors!"), null);
+        return ok;
     }
 
     /**
@@ -301,7 +384,7 @@ public class Highligther extends SwingWorker<Void, Void> {
 
         FO2HLogger.reportInfo("Starting Higlighter work", null);
         if (config.getInDir().isDirectory()) {
-            File[] fileArray = config.getInDir().listFiles();
+            File[] fileArray = config.isRecursive() ? buildTree(config.getInDir()) : config.getInDir().listFiles();
             FO2HLogger.reportInfo("Processing " + fileArray.length + " files..", null);
             for (File srcFile : fileArray) {
                 if (stopped) {
@@ -311,7 +394,19 @@ public class Highligther extends SwingWorker<Void, Void> {
 
                 // if file is fofrm copy it to the output                                      
                 if (srcFile.getName().toLowerCase().endsWith(".fofrm")) {
-                    File dstFile = new File(config.getOutDir() + File.separator + srcFile.getName());
+                    File dstFile = null;
+                    if (config.isRecursive()) {
+                        File dirs = srcFile;
+                        StringBuilder sb = new StringBuilder();
+                        while (!dirs.equals(config.getInDir())) {
+                            dirs = dirs.getParentFile();
+                            sb.insert(0, dirs.getName());
+                            sb.insert(0, File.separator);
+                        }
+                        dstFile = new File(config.getOutDir() + File.separator + sb.toString() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
+                    } else {
+                        dstFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
+                    }
                     try {
                         Files.copy(srcFile.toPath(), dstFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException ex) {
@@ -371,11 +466,26 @@ public class Highligther extends SwingWorker<Void, Void> {
                                 frameOffsetsX,
                                 frameOffsetsY
                         );
-                        File outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
+
+                        File outFile = null;
+                        if (config.isRecursive()) {
+                            File dirs = srcFile;
+                            StringBuilder sb = new StringBuilder();
+                            while (!dirs.equals(config.getInDir())) {
+                                dirs = dirs.getParentFile();
+                                sb.insert(0, dirs.getName());
+                                sb.insert(0, File.separator);
+                            }
+                            outFile = new File(config.getOutDir() + File.separator + sb.toString() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
+                        } else {
+                            outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".FRM"));
+                        }
 
                         if (outFile.exists()) {
                             outFile.delete();
                         }
+
+                        outFile.mkdirs();
 
                         dstFRM.write(outFile);
                     } else if (srcFile.getName().toLowerCase().endsWith(".png")) {
@@ -410,11 +520,25 @@ public class Highligther extends SwingWorker<Void, Void> {
                             }
 
                             //--------------------------------------------------
-                            File outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".png"));
+                            File outFile = null;
+                            if (config.isRecursive()) {
+                                File dirs = srcFile;
+                                StringBuilder sb = new StringBuilder();
+                                while (!dirs.equals(config.getInDir())) {
+                                    dirs = dirs.getParentFile();
+                                    sb.insert(0, dirs.getName());
+                                    sb.insert(0, File.separator);
+                                }
+                                outFile = new File(config.getOutDir() + File.separator + sb.toString() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".png"));
+                            } else {
+                                outFile = new File(config.getOutDir() + File.separator + srcFile.getName().replaceFirst("[.][^.]+$", ".png"));
+                            }
 
                             if (outFile.exists()) {
                                 outFile.delete();
                             }
+
+                            outFile.mkdirs();
 
                             try {
                                 ImageIO.write(imgDst, "png", outFile);
@@ -446,6 +570,43 @@ public class Highligther extends SwingWorker<Void, Void> {
 
     public void setStopped(boolean stopped) {
         this.stopped = stopped;
+    }
+
+    public Configuration getConfig() {
+        return config;
+    }
+
+    public Font getMyFont() {
+        return myFont;
+    }
+
+    public static String getDictionaryErrorMessage() {
+        return dictionaryErrorMessage;
+    }
+
+    private File[] buildTree(File inDir) {
+        List<File> result = new ArrayList<>();
+
+        Stack<File> stack = new Stack<>();
+        stack.push(inDir);
+
+        while (!stack.isEmpty()) {
+            File file = stack.pop();
+            if (file.isDirectory()) {
+                String[] list = file.list();
+                for (int i = list.length - 1; i >= 0; i--) {
+                    File chldFile = new File(
+                            file.getAbsolutePath() + File.separator + list[i]
+                    );
+                    stack.push(chldFile);
+                }
+            } else {
+                result.add(file);
+            }
+        }
+
+        File[] array = new File[result.size()];
+        return result.toArray(array);
     }
 
 }

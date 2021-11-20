@@ -31,6 +31,8 @@ import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -79,7 +81,7 @@ public class GUI extends javax.swing.JFrame {
                 colorVector[i] = new JLabel();
                 colorVector[i].setBackground(Color.BLACK);
                 colorVector[i].setOpaque(true);
-                colorVector[i].setSize(9, 9);
+                colorVector[i].setSize(6, 6);
                 colorVector[i].setBorder(new BevelBorder(BevelBorder.RAISED));
 
                 Color col = new Color(Palette.getColors()[i]);
@@ -88,7 +90,7 @@ public class GUI extends javax.swing.JFrame {
                 colorVector[i].setToolTipText("Red = " + col.getRed()
                         + ", Green = " + col.getGreen() + ", Blue = " + col.getBlue());
 
-                pnlPalette.add(colorVector[i], new Integer(i));
+                pnlPalCols.add(colorVector[i], new Integer(i));
             }
         }
     }
@@ -127,24 +129,74 @@ public class GUI extends javax.swing.JFrame {
     }
 
     private void initColors() {
-        this.btnImplantColor.setBackground(cfg.getImplantColor());
-        this.btnT4Color.setBackground(cfg.getT4Color());
-        this.btnT3Color.setBackground(cfg.getT3Color());
-        this.btnT2Color.setBackground(cfg.getT2Color());
-        this.btnT1Color.setBackground(cfg.getT1Color());
-        this.btnT0Color.setBackground(cfg.getT0Color());
-        this.btnBookColor.setBackground(cfg.getBookColor());
-        this.btnOreColor.setBackground(cfg.getOreColor());
-        this.btnContainerColor.setBackground(cfg.getContainerColor());
-        this.btnCollectionColor.setBackground(cfg.getCollectionColor());
-        this.btnResourceColor.setBackground(cfg.getResourcesColor());
-        this.btnUnusedColor.setBackground(cfg.getUnusedColor());
+        Color implantColor = cfg.getImplantColor();
+        this.btnImplantColor.setBackground(implantColor);
+        this.btnImplantColor.setToolTipText("Red = " + implantColor.getRed()
+                + ", Green = " + implantColor.getGreen() + ", Blue = " + implantColor.getBlue());
+
+        Color t4Color = cfg.getT4Color();
+        this.btnT4Color.setBackground(t4Color);
+        this.btnT4Color.setToolTipText("Red = " + t4Color.getRed()
+                + ", Green = " + t4Color.getGreen() + ", Blue = " + t4Color.getBlue());
+
+        Color t3Color = cfg.getT3Color();
+        this.btnT3Color.setBackground(t3Color);
+        this.btnT3Color.setToolTipText("Red = " + t3Color.getRed()
+                + ", Green = " + t3Color.getGreen() + ", Blue = " + t3Color.getBlue());
+
+        Color t2Color = cfg.getT2Color();
+        this.btnT2Color.setBackground(t2Color);
+        this.btnT2Color.setToolTipText("Red = " + t2Color.getRed()
+                + ", Green = " + t2Color.getGreen() + ", Blue = " + t2Color.getBlue());
+
+        Color t1Color = cfg.getT1Color();
+        this.btnT1Color.setBackground(t1Color);
+        this.btnT1Color.setToolTipText("Red = " + t1Color.getRed()
+                + ", Green = " + t1Color.getGreen() + ", Blue = " + t1Color.getBlue());
+
+        Color t0Color = cfg.getT0Color();
+        this.btnT0Color.setBackground(t0Color);
+        this.btnT0Color.setToolTipText("Red = " + t0Color.getRed()
+                + ", Green = " + t0Color.getGreen() + ", Blue = " + t0Color.getBlue());
+
+        Color bookColor = cfg.getBookColor();
+        this.btnBookColor.setBackground(bookColor);
+        this.btnBookColor.setToolTipText("Red = " + bookColor.getRed()
+                + ", Green = " + bookColor.getGreen() + ", Blue = " + bookColor.getBlue());
+
+        Color oreColor = cfg.getOreColor();
+        this.btnOreColor.setBackground(oreColor);
+        this.btnOreColor.setToolTipText("Red = " + oreColor.getRed()
+                + ", Green = " + oreColor.getGreen() + ", Blue = " + oreColor.getBlue());
+
+        Color containerColor = cfg.getContainerColor();
+        this.btnContainerColor.setBackground(containerColor);
+        this.btnContainerColor.setToolTipText("Red = " + containerColor.getRed()
+                + ", Green = " + containerColor.getGreen() + ", Blue = " + containerColor.getBlue());
+
+        Color collectionColor = cfg.getCollectionColor();
+        this.btnCollectionColor.setBackground(collectionColor);
+        this.btnCollectionColor.setToolTipText("Red = " + collectionColor.getRed()
+                + ", Green = " + collectionColor.getGreen() + ", Blue = " + collectionColor.getBlue());
+
+        Color resourcesColor = cfg.getResourcesColor();
+        this.btnResourceColor.setBackground(resourcesColor);
+        this.btnResourceColor.setToolTipText("Red = " + resourcesColor.getRed()
+                + ", Green = " + resourcesColor.getGreen() + ", Blue = " + resourcesColor.getBlue());
+
+        Color unusedColor = cfg.getUnusedColor();
+        this.btnUnusedColor.setBackground(unusedColor);
+        this.btnUnusedColor.setToolTipText("Red = " + unusedColor.getRed()
+                + ", Green = " + unusedColor.getGreen() + ", Blue = " + unusedColor.getBlue());
     }
 
     private void initMeths() {
         this.cbOutline.setSelected(cfg.isDrawOutline());
         this.cbFillInterior.setSelected(cfg.isFillInterior());
         this.cbPutLabels.setSelected(cfg.isPutLabels());
+
+        this.cbRecurse.setSelected(cfg.isRecursive());
+        this.cbForcePalCols.setSelected(cfg.isForcePaletteColors());
     }
 
     private void fileInOpen() {
@@ -192,7 +244,10 @@ public class GUI extends javax.swing.JFrame {
         lblOutput = new javax.swing.JLabel();
         txtFldOutPath = new javax.swing.JTextField();
         btnChoosePathOut = new javax.swing.JButton();
+        cbRecurse = new javax.swing.JCheckBox();
         pnlPalette = new javax.swing.JPanel();
+        pnlPalCols = new javax.swing.JPanel();
+        cbForcePalCols = new javax.swing.JCheckBox();
         pnlOutlineColors = new javax.swing.JPanel();
         lblImplantColor = new javax.swing.JLabel();
         btnImplantColor = new javax.swing.JButton();
@@ -219,9 +274,12 @@ public class GUI extends javax.swing.JFrame {
         lblUnusedColor = new javax.swing.JLabel();
         btnUnusedColor = new javax.swing.JButton();
         pnlWork = new javax.swing.JPanel();
+        pnl01Effects = new javax.swing.JPanel();
         cbOutline = new javax.swing.JCheckBox();
         cbFillInterior = new javax.swing.JCheckBox();
         cbPutLabels = new javax.swing.JCheckBox();
+        pnl02Unused = new javax.swing.JPanel();
+        pnl03Progress = new javax.swing.JPanel();
         btnGo = new javax.swing.JButton();
         progBarWork = new javax.swing.JProgressBar();
         btnStop = new javax.swing.JButton();
@@ -239,24 +297,30 @@ public class GUI extends javax.swing.JFrame {
         fileChooserOutput.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("FOnline2 Highlighter - KOREANS");
-        setMinimumSize(new java.awt.Dimension(420, 600));
+        setTitle("FOnline2 Highlighter - LATVIA");
+        setMinimumSize(new java.awt.Dimension(600, 600));
         setResizable(false);
-        setSize(new java.awt.Dimension(480, 600));
-        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
+        setSize(new java.awt.Dimension(600, 600));
+        getContentPane().setLayout(new java.awt.GridLayout(2, 2));
 
         pnlFilePaths.setBorder(javax.swing.BorderFactory.createTitledBorder("Directory Paths"));
-        pnlFilePaths.setLayout(new java.awt.GridLayout(2, 3));
+        pnlFilePaths.setLayout(new javax.swing.BoxLayout(pnlFilePaths, javax.swing.BoxLayout.PAGE_AXIS));
 
         lblInput.setText("Input data directory:");
+        lblInput.setAlignmentY(0.0F);
         pnlFilePaths.add(lblInput);
 
         txtFldInPath.setEditable(false);
+        txtFldInPath.setColumns(24);
+        txtFldInPath.setAlignmentX(0.0F);
+        txtFldInPath.setAlignmentY(0.0F);
         pnlFilePaths.add(txtFldInPath);
 
         btnChooseInPath.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/dir_icon.png"))); // NOI18N
-        btnChooseInPath.setText("Input dir...");
+        btnChooseInPath.setText("Input directory");
         btnChooseInPath.setToolTipText("Choose input directory");
+        btnChooseInPath.setAlignmentY(0.0F);
+        btnChooseInPath.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnChooseInPath.setIconTextGap(16);
         btnChooseInPath.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -266,14 +330,20 @@ public class GUI extends javax.swing.JFrame {
         pnlFilePaths.add(btnChooseInPath);
 
         lblOutput.setText("Output data directory:");
+        lblOutput.setAlignmentY(0.0F);
         pnlFilePaths.add(lblOutput);
 
         txtFldOutPath.setEditable(false);
+        txtFldOutPath.setColumns(24);
+        txtFldOutPath.setAlignmentX(0.0F);
+        txtFldOutPath.setAlignmentY(0.0F);
         pnlFilePaths.add(txtFldOutPath);
 
         btnChoosePathOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/dir_icon.png"))); // NOI18N
-        btnChoosePathOut.setText("Output dir...");
+        btnChoosePathOut.setText("Output diredtory");
         btnChoosePathOut.setToolTipText("Choose output directory");
+        btnChoosePathOut.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnChoosePathOut.setIconTextGap(8);
         btnChoosePathOut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnChoosePathOutActionPerformed(evt);
@@ -281,10 +351,36 @@ public class GUI extends javax.swing.JFrame {
         });
         pnlFilePaths.add(btnChoosePathOut);
 
+        cbRecurse.setText("Recurse through Child Directories");
+        cbRecurse.setToolTipText("Recurse through all sub directories from input path");
+        cbRecurse.setAlignmentY(0.0F);
+        cbRecurse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbRecurseActionPerformed(evt);
+            }
+        });
+        pnlFilePaths.add(cbRecurse);
+
         getContentPane().add(pnlFilePaths);
 
         pnlPalette.setBorder(javax.swing.BorderFactory.createTitledBorder("Palette"));
-        pnlPalette.setLayout(new java.awt.GridLayout(16, 16, 2, 2));
+        pnlPalette.setLayout(new java.awt.BorderLayout());
+
+        pnlPalCols.setAlignmentX(0.0F);
+        pnlPalCols.setAlignmentY(0.0F);
+        pnlPalCols.setLayout(new java.awt.GridLayout(16, 16, 2, 2));
+        pnlPalette.add(pnlPalCols, java.awt.BorderLayout.CENTER);
+
+        cbForcePalCols.setText("Force Palette Colors");
+        cbForcePalCols.setToolTipText("All Item Colors will be contrained to Palette ones");
+        cbForcePalCols.setAlignmentY(0.0F);
+        cbForcePalCols.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbForcePalColsActionPerformed(evt);
+            }
+        });
+        pnlPalette.add(cbForcePalCols, java.awt.BorderLayout.PAGE_START);
+
         getContentPane().add(pnlPalette);
 
         pnlOutlineColors.setBorder(javax.swing.BorderFactory.createTitledBorder("Item Colors"));
@@ -437,38 +533,61 @@ public class GUI extends javax.swing.JFrame {
 
         getContentPane().add(pnlOutlineColors);
 
-        pnlWork.setBorder(javax.swing.BorderFactory.createTitledBorder("Work"));
-        pnlWork.setLayout(new java.awt.GridLayout(2, 3, 2, 2));
+        pnlWork.setBorder(javax.swing.BorderFactory.createTitledBorder("Work & Effects"));
+        pnlWork.setLayout(new javax.swing.BoxLayout(pnlWork, javax.swing.BoxLayout.PAGE_AXIS));
+
+        pnl01Effects.setLayout(new java.awt.GridLayout(1, 2, 2, 2));
 
         cbOutline.setSelected(true);
         cbOutline.setText("Draw Outline");
+        cbOutline.setToolTipText("Draw Outline on the Image Edges");
+        cbOutline.setAlignmentY(0.0F);
+        cbOutline.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbOutline.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         cbOutline.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbOutlineActionPerformed(evt);
             }
         });
-        pnlWork.add(cbOutline);
+        pnl01Effects.add(cbOutline);
 
         cbFillInterior.setText("Fill Interior");
+        cbFillInterior.setToolTipText("Fill Interior of the Image");
+        cbFillInterior.setAlignmentY(0.0F);
+        cbFillInterior.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbFillInterior.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         cbFillInterior.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbFillInteriorActionPerformed(evt);
             }
         });
-        pnlWork.add(cbFillInterior);
+        pnl01Effects.add(cbFillInterior);
 
         cbPutLabels.setText("Put Labels");
+        cbPutLabels.setToolTipText("Put a Label above Item");
+        cbPutLabels.setAlignmentY(0.0F);
+        cbPutLabels.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        cbPutLabels.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         cbPutLabels.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbPutLabelsActionPerformed(evt);
             }
         });
-        pnlWork.add(cbPutLabels);
+        pnl01Effects.add(cbPutLabels);
+
+        pnlWork.add(pnl01Effects);
+
+        pnl02Unused.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        pnl02Unused.setLayout(new java.awt.BorderLayout());
+        pnlWork.add(pnl02Unused);
+
+        pnl03Progress.setLayout(new java.awt.GridLayout(1, 0));
 
         btnGo.setForeground(new java.awt.Color(51, 255, 51));
         btnGo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/avenger.png"))); // NOI18N
         btnGo.setText("GO");
         btnGo.setToolTipText("Get the highlighter working");
+        btnGo.setAlignmentY(0.0F);
         btnGo.setEnabled(false);
         btnGo.setPreferredSize(new java.awt.Dimension(70, 35));
         btnGo.addActionListener(new java.awt.event.ActionListener() {
@@ -476,16 +595,19 @@ public class GUI extends javax.swing.JFrame {
                 btnGoActionPerformed(evt);
             }
         });
-        pnlWork.add(btnGo);
+        pnl03Progress.add(btnGo);
 
-        progBarWork.setPreferredSize(new java.awt.Dimension(70, 35));
+        progBarWork.setAlignmentX(0.0F);
+        progBarWork.setAlignmentY(1.0F);
+        progBarWork.setPreferredSize(new java.awt.Dimension(75, 25));
         progBarWork.setStringPainted(true);
-        pnlWork.add(progBarWork);
+        pnl03Progress.add(progBarWork);
 
         btnStop.setForeground(new java.awt.Color(204, 0, 51));
         btnStop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/stop.png"))); // NOI18N
         btnStop.setText("STOP");
         btnStop.setToolTipText("Stops higlighter abruptly");
+        btnStop.setAlignmentY(0.0F);
         btnStop.setEnabled(false);
         btnStop.setPreferredSize(new java.awt.Dimension(70, 35));
         btnStop.addActionListener(new java.awt.event.ActionListener() {
@@ -493,7 +615,9 @@ public class GUI extends javax.swing.JFrame {
                 btnStopActionPerformed(evt);
             }
         });
-        pnlWork.add(btnStop);
+        pnl03Progress.add(btnStop);
+
+        pnlWork.add(pnl03Progress);
 
         getContentPane().add(pnlWork);
 
@@ -600,6 +724,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setImplantColor(color);
             this.btnImplantColor.setBackground(color);
+            this.btnImplantColor.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnImplantColorActionPerformed
 
@@ -609,6 +735,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setT4Color(color);
             this.btnT4Color.setBackground(color);
+            this.btnT4Color.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnT4ColorActionPerformed
 
@@ -618,6 +746,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setT3Color(color);
             this.btnT3Color.setBackground(color);
+            this.btnT3Color.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnT3ColorActionPerformed
 
@@ -627,6 +757,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setT2Color(color);
             this.btnT2Color.setBackground(color);
+            this.btnT2Color.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnT2ColorActionPerformed
 
@@ -636,6 +768,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setT1Color(color);
             this.btnT1Color.setBackground(color);
+            this.btnT1Color.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnT1ColorActionPerformed
 
@@ -645,6 +779,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setT0Color(color);
             this.btnT0Color.setBackground(color);
+            this.btnT0Color.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnT0ColorActionPerformed
 
@@ -654,6 +790,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setBookColor(color);
             this.btnBookColor.setBackground(color);
+            this.btnBookColor.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnBookColorActionPerformed
 
@@ -663,6 +801,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setOreColor(color);
             this.btnOreColor.setBackground(color);
+            this.btnOreColor.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnOreColorActionPerformed
 
@@ -672,6 +812,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setUnusedColor(color);
             this.btnUnusedColor.setBackground(color);
+            this.btnUnusedColor.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnUnusedColorActionPerformed
 
@@ -685,9 +827,15 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LICENSE_LOGO_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>VERSION V1.5 - KOREANS (PUBLIC BUILD reviewed on 2021-09-05 at 12:00).</b></html>\n");
-            sb.append("<html><b>This software is free software, </b></html>\n");
-            sb.append("<html><b>licensed under GNU General Public License (GPL).</b></html>\n");
+            sb.append("VERSION V1.6 - LATVIA (PUBLIC BUILD reviewed on 2021-11-21 at 02:00).\n");
+            sb.append("This software is free software, \n");
+            sb.append("licensed under GNU General Public License (GPL).\n");
+            sb.append("\n");
+            sb.append("Changelog for V1.6 LATVIA:\n");
+            sb.append("\t- Changes to app design.\n");
+            sb.append("\t- Feature to recurse through child directories.\n");
+            sb.append("\t- Feature to force palette colors (substitution for non matching colors).\n");
+            sb.append("\t- Error handling for erroneous dictionaries.\n");
             sb.append("\n");
             sb.append("Changelog for V1.5 KOREANS:\n");
             sb.append("\t- Feature to make custom item group.\n");
@@ -716,15 +864,18 @@ public class GUI extends javax.swing.JFrame {
             sb.append("\t- Fixed color not updating for buttons [Randall].\n");
             sb.append("\n");
             sb.append("Objective:\n");
-            sb.append("\tThe purpose of this program is\n");
-            sb.append("\tcolorizing onground and scenery items for FOnline series.\n");
+            sb.append("The purpose of this program is\n");
+            sb.append("colorizing onground and scenery items for FOnline series.\n");
             sb.append("\n");
-            sb.append("\tDesignated to use primarily for FOnline 2 Season 3.\n");
+            sb.append("Designated to use primarily for FOnline 2 Season 3.\n");
             sb.append("\n");
-            sb.append("<html><b>Copyright © 2021</b></html>\n");
-            sb.append("<html><b>Alexander \"Ermac\" Stojanovich</b></html>\n");
+            sb.append("Copyright © 2021\n");
+            sb.append("Alexander \"Ermac\" Stojanovich\n");
             ImageIcon icon = new ImageIcon(icon_url);
-            JOptionPane.showMessageDialog(this, sb.toString(), "About", JOptionPane.INFORMATION_MESSAGE, icon);
+            JTextArea textArea = new JTextArea(sb.toString(), 15, 50);
+            JScrollPane jsp = new JScrollPane(textArea);
+            textArea.setEditable(false);
+            JOptionPane.showMessageDialog(this, jsp, "About", JOptionPane.INFORMATION_MESSAGE, icon);
         }
     }//GEN-LAST:event_infoMenuAboutActionPerformed
 
@@ -734,6 +885,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setContainerColor(color);
             this.btnContainerColor.setBackground(color);
+            this.btnContainerColor.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnContainerColorActionPerformed
 
@@ -742,8 +895,8 @@ public class GUI extends javax.swing.JFrame {
         URL icon_url = getClass().getResource(RESOURCES_DIR + LOGOX_FILE_NAME);
         if (icon_url != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append("<html><b>- FOR THE PURPOSE ABOUT THIS PROGRAM, </b></html>\n");
-            sb.append("<html><b>check About. Make sure that you checked it first.</b></html>\n");
+            sb.append("- FOR THE PURPOSE ABOUT THIS PROGRAM, \n");
+            sb.append("check About. Make sure that you checked it first.\n");
             sb.append("\n");
             sb.append("- Applying highlighther consists of several steps:\n");
             sb.append("\t1. Extract fallout.dat, data01.zip, data03.zip, and data04.zip (in that order) to a single location, replace when prompted.\n");
@@ -754,20 +907,25 @@ public class GUI extends javax.swing.JFrame {
             sb.append("\t5. (Optional) Choose drawing methods for the item categories,\n");
             sb.append("\t6. Click GO to start the work and wait to complete.\n");
             sb.append("\n");
-            sb.append("\tRepeat steps 2-6 for \"art > scenery_new\".\n");
+            sb.append("\t*Repeat steps 2-6 for \"art > scenery_new\".\n");
             sb.append("\n");
-            sb.append("\t[Tip] If you wanna change items categories alter \"Dictionary.txt.\"\n");
-            sb.append("\tDo it with caution.\n");
+            sb.append("[Tip] *If you don't wanna to repeat steps 2-6 when applying highligthter use \"Recursive\".\n");
             sb.append("\n");
-            sb.append("\t[Tip] Remember to back up your files before you start and where you're done.\n");
+            sb.append("[Tip] If you wanna change items categories alter \"Dictionary.txt.\"\n");
+            sb.append("Do it with caution.\n");
             sb.append("\n");
-            sb.append("\t[Tip] For best results make sure that chosen colors are colors from the palette.\n");
+            sb.append("[Tip] Remember to back up your files before you start and where you're done.\n");
             sb.append("\n");
-            sb.append("\t[Tip] Dictionary can be shared with other players.\n");
-            sb.append("\tShow them how it's made!");
+            sb.append("[Tip] For best results make sure that chosen colors are colors from the palette.\n");
+            sb.append("\n");
+            sb.append("[Tip] Dictionary can be shared with other players.\n");
+            sb.append("Show them how it's made!");
             sb.append("\n");
             ImageIcon icon = new ImageIcon(icon_url);
-            JOptionPane.showMessageDialog(this, sb.toString(), "How to use", JOptionPane.INFORMATION_MESSAGE, icon);
+            JTextArea textArea = new JTextArea(sb.toString(), 15, 50);
+            JScrollPane jsp = new JScrollPane(textArea);
+            textArea.setEditable(false);
+            JOptionPane.showMessageDialog(this, jsp, "How to use", JOptionPane.INFORMATION_MESSAGE, icon);
         }
     }//GEN-LAST:event_infoMenuHelpActionPerformed
 
@@ -777,6 +935,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setResourcesColor(color);
             this.btnResourceColor.setBackground(color);
+            this.btnResourceColor.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnResourceColorActionPerformed
 
@@ -808,6 +968,8 @@ public class GUI extends javax.swing.JFrame {
         if (color != null) {
             GUI.cfg.setCollectionColor(color);
             this.btnCollectionColor.setBackground(color);
+            this.btnCollectionColor.setToolTipText("Red = " + color.getRed()
+                    + ", Green = " + color.getGreen() + ", Blue = " + color.getBlue());
         }
     }//GEN-LAST:event_btnCollectionColorActionPerformed
 
@@ -815,10 +977,24 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         int returnVal = fileLoadDictionary.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            Highligther.initDictionary(fileLoadDictionary.getSelectedFile());
-            JOptionPane.showMessageDialog(GUI.this, "Dictionary initialized!", "Dictionary", JOptionPane.INFORMATION_MESSAGE);
+            boolean ok = Highligther.loadDictionary(fileLoadDictionary.getSelectedFile());
+            if (ok) {
+                JOptionPane.showMessageDialog(GUI.this, "Dictionary initialized!", "Dictionary", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(GUI.this, "Dictionary is erroneous - " + Highligther.getDictionaryErrorMessage(), "Dictionary", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }//GEN-LAST:event_fileMenuLoadDictionaryActionPerformed
+
+    private void cbRecurseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbRecurseActionPerformed
+        // TODO add your handling code here:
+        GUI.cfg.setRecursive(this.cbRecurse.isSelected());
+    }//GEN-LAST:event_cbRecurseActionPerformed
+
+    private void cbForcePalColsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbForcePalColsActionPerformed
+        // TODO add your handling code here:
+        GUI.cfg.setForcePaletteColors(this.cbForcePalCols.isSelected());
+    }//GEN-LAST:event_cbForcePalColsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -877,8 +1053,10 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton btnT4Color;
     private javax.swing.JButton btnUnusedColor;
     private javax.swing.JCheckBox cbFillInterior;
+    private javax.swing.JCheckBox cbForcePalCols;
     private javax.swing.JCheckBox cbOutline;
     private javax.swing.JCheckBox cbPutLabels;
+    private javax.swing.JCheckBox cbRecurse;
     private javax.swing.JFileChooser fileChooserInput;
     private javax.swing.JFileChooser fileChooserOutput;
     private javax.swing.JFileChooser fileLoadDictionary;
@@ -903,8 +1081,12 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JMenuBar mainMenu;
     private javax.swing.JMenu mainMenuFile;
     private javax.swing.JMenu mainMenuInfo;
+    private javax.swing.JPanel pnl01Effects;
+    private javax.swing.JPanel pnl02Unused;
+    private javax.swing.JPanel pnl03Progress;
     private javax.swing.JPanel pnlFilePaths;
     private javax.swing.JPanel pnlOutlineColors;
+    private javax.swing.JPanel pnlPalCols;
     private javax.swing.JPanel pnlPalette;
     private javax.swing.JPanel pnlWork;
     private javax.swing.JProgressBar progBarWork;
