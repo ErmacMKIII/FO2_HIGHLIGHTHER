@@ -42,6 +42,7 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingWorker;
 import rs.alexanderstojanovich.fo2h.frm.FRM;
 import rs.alexanderstojanovich.fo2h.frm.ImageData;
+import rs.alexanderstojanovich.fo2h.frm.Palette;
 import rs.alexanderstojanovich.fo2h.util.ColorSample;
 import rs.alexanderstojanovich.fo2h.util.FO2HLogger;
 
@@ -131,12 +132,12 @@ public class Highligther extends SwingWorker<Void, Void> {
                     if (obj.isLabeled() && things.length == 2) {
                         MAPPED_BY.put(things[0].trim(), things[1].trim());
                     } else if (things.length > 2) {
-                        sb.append("Line ").append(lineNum).append(" : Invalid \"MAPPED BY =>\" Definition!");
+                        sb.append("Line ").append(lineNum).append(" : Invalid \"MAPPED BY =>\" Definition!\n");
                         FO2HLogger.reportError("Line " + lineNum + " : Invalid \"MAPPED BY =>\" Definition!", null);
                         ok = false;
                     }
                 } else if (!line.replaceAll("\\s+", "").isEmpty()) {
-                    sb.append("Line ").append(lineNum).append(" : Invalid Definition!");
+                    sb.append("Line ").append(lineNum).append(" : Invalid Definition!\n");
                     FO2HLogger.reportError("Line " + lineNum + " : Invalid Definition!", null);
                     ok = false;
                 }
@@ -217,12 +218,12 @@ public class Highligther extends SwingWorker<Void, Void> {
                     if (obj.isLabeled() && things.length == 2) {
                         MAPPED_BY.put(things[0].trim(), things[1].trim());
                     } else if (things.length > 2) {
-                        sb.append("Line ").append(lineNum).append(" : Invalid \"MAPPED BY =>\" Definition!");
+                        sb.append("Line ").append(lineNum).append(" : Invalid \"MAPPED BY =>\" Definition!\n");
                         FO2HLogger.reportError("Line " + lineNum + " : Invalid \"MAPPED BY =>\" Definition!", null);
                         ok = false;
                     }
                 } else if (!line.replaceAll("\\s+", "").isEmpty()) {
-                    sb.append("Line ").append(lineNum).append(" : Invalid Definition!");
+                    sb.append("Line ").append(lineNum).append(" : Invalid Definition!\n");
                     FO2HLogger.reportError("Line " + lineNum + " : Invalid Definition!", null);
                     ok = false;
                 }
@@ -255,7 +256,11 @@ public class Highligther extends SwingWorker<Void, Void> {
      */
     private Color getItemColor(String extLessFilename) {
         Obj obj = DICTIONARY.getOrDefault(extLessFilename, PredefObj.UNUSED);
-        return obj.getColor(config);
+        Color color = obj.getColor(config);
+        if (config.isForcePaletteColors()) {
+            color = Palette.substitute(color);
+        }
+        return color;
     }
 
     /**

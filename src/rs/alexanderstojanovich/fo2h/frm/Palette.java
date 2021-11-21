@@ -76,6 +76,36 @@ public class Palette {
     }
 
     /**
+     * Color substitution for palette color enforcing
+     *
+     * @param color parsed color to look match for
+     * @return best matching color
+     */
+    public static Color substitute(Color color) {
+        Color col = new Color(color.getRGB(), false);
+        int minDeviation = 255 * 1000;
+        int minIndex = -1;
+        int index = 0;
+        for (int rgbi : Palette.getColors()) {
+            Color coli = new Color(rgbi);
+            int deviation = 299 * Math.abs(col.getRed() - coli.getRed())
+                    + 587 * Math.abs(col.getGreen() - coli.getGreen())
+                    + 114 * Math.abs(col.getBlue() - coli.getBlue());
+            if (deviation < minDeviation) {
+                minDeviation = deviation;
+                minIndex = index;
+                if (deviation == 0) {
+                    break;
+                }
+            }
+            index++;
+
+        }
+
+        return (minIndex == -1) ? null : new Color(Palette.getColors()[minIndex]);
+    }
+
+    /**
      * asynch reset - returns palette into initial state
      */
     public static void reset() {

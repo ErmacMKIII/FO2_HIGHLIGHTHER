@@ -979,9 +979,12 @@ public class GUI extends javax.swing.JFrame {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             boolean ok = Highligther.loadDictionary(fileLoadDictionary.getSelectedFile());
             if (ok) {
-                JOptionPane.showMessageDialog(GUI.this, "Dictionary initialized!", "Dictionary", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(GUI.this, "Dictionary successfully loaded!", "Dictionary", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(GUI.this, "Dictionary is erroneous - " + Highligther.getDictionaryErrorMessage(), "Dictionary", JOptionPane.ERROR_MESSAGE);
+                JTextArea textArea = new JTextArea(Highligther.getDictionaryErrorMessage(), 15, 50);
+                JScrollPane jsp = new JScrollPane(textArea);
+                textArea.setEditable(false);
+                JOptionPane.showMessageDialog(GUI.this, jsp, "Dictionary Errors", JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_fileMenuLoadDictionaryActionPerformed
