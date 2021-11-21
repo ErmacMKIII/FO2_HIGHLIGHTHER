@@ -340,7 +340,7 @@ public class GUI extends javax.swing.JFrame {
         pnlFilePaths.add(txtFldOutPath);
 
         btnChoosePathOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/rs/alexanderstojanovich/fo2h/res/dir_icon.png"))); // NOI18N
-        btnChoosePathOut.setText("Output diredtory");
+        btnChoosePathOut.setText("Output directory");
         btnChoosePathOut.setToolTipText("Choose output directory");
         btnChoosePathOut.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         btnChoosePathOut.setIconTextGap(8);

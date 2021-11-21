@@ -161,7 +161,7 @@
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
               <Image iconType="3" name="/rs/alexanderstojanovich/fo2h/res/dir_icon.png"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Output diredtory"/>
+            <Property name="text" type="java.lang.String" value="Output directory"/>
             <Property name="toolTipText" type="java.lang.String" value="Choose output directory"/>
             <Property name="horizontalAlignment" type="int" value="2"/>
             <Property name="iconTextGap" type="int" value="8"/>
